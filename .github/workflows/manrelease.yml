@@ -43,3 +43,14 @@ jobs:
         if: ${{startsWith(github.ref, 'refs/tags/') }}
         with:
           files: Artie.zip
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Add Artie.zip file"
+          git push
