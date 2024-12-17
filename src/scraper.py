@@ -221,10 +221,10 @@ def fetch_preview(game, config):
 
 
 def fetch_synopsis(game, config):
-    synopsis = game["response"]["jeu"].get("synopsis")
-    players = game["response"]["jeu"].get("joueurs").text
-    rating = game["response"]["jeu"].get("note").text
-    developer = game["response"]["jeu"].get("developpeur").text
+    synopsis = str(game["response"]["jeu"].get("synopsis"))
+    players = str(game["response"]["jeu"].get("joueurs").text)
+    rating = str(game["response"]["jeu"].get("note").text)
+    developer = str(game["response"]["jeu"].get("developpeur").text)
 
 
     if not players:
