@@ -222,6 +222,26 @@ def fetch_preview(game, config):
 
 def fetch_synopsis(game, config):
     synopsis = game["response"]["jeu"].get("synopsis")
+    players = game["response"]["jeu"].get("joueurs").text
+    rating = game["response"]["jeu"].get("note").text
+    developer = game["response"]["jeu"].get("developpeur").text
+
+
+    if not players:
+        players = "unkwon"
+    if not rating:
+        rating = "no rating"
+    else:
+        try:
+            float_rating = float(rating)
+        except ValueError:
+            # FIXME replace with error message
+            float_rating = -1
+        rating = str(round(float_rating / 20, 2))
+
+    if not developer:
+        developer = "unkwon developer"
+
     if not synopsis:
         return None
 
@@ -230,5 +250,6 @@ def fetch_synopsis(game, config):
         (item["text"] for item in synopsis if item["langue"] == synopsis_lang), None
     )
     if synopsis_text:
-        return synopsis_text
+        full_content = f"{developer}, {rating}, {players} player(s)\n{synopsis_text}"
+        return full_content
     return None
