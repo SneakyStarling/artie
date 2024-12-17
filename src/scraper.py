@@ -15,6 +15,7 @@ MAX_FILE_SIZE_BYTES = 104857600  # 100MB
 IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 VALID_MEDIA_TYPES = {"box-2D", "box-3D", "mixrbv1", "mixrbv2", "ss"}
 
+DEBUG = True
 
 def get_image_files_without_extension(folder):
     return [
@@ -221,35 +222,28 @@ def fetch_preview(game, config):
 
 
 def fetch_synopsis(game, config):
-    synopsis = str(game["response"]["jeu"].get("synopsis"))
-    players = str(game["response"]["jeu"].get("joueurs").text)
-    rating = str(game["response"]["jeu"].get("note").text)
-    developer = str(game["response"]["jeu"].get("developpeur").text)
-
-
-    if not players:
-        players = "unkwon"
-    if not rating:
-        rating = "no rating"
-    else:
-        try:
-            float_rating = float(rating)
-        except ValueError:
-            # FIXME replace with error message
-            float_rating = -1
-        rating = str(round(float_rating / 20, 2))
-
-    if not developer:
-        developer = "unkwon developer"
+    synopsis = game["response"]["jeu"].get("synopsis", [])
+    players = game["response"]["jeu"].get("joueurs", "unknown")
+    rating = game["response"]["jeu"].get("note", "no rating")
+    developer = game["response"]["jeu"].get("developpeur", "unknown developer")
 
     if not synopsis:
         return None
 
     synopsis_lang = config["synopsis"]["lang"]
     synopsis_text = next(
-        (item["text"] for item in synopsis if item["langue"] == synopsis_lang), None
+        (item["text"] for item in synopsis if item["langue"] == synopsis_lang),
+        None
     )
+
     if synopsis_text:
+        try:
+            float_rating = float(rating)
+            rating = str(round(float_rating / 20, 2))
+        except ValueError:
+            pass  # Keep the original rating string if conversion fails
+
         full_content = f"{developer}, {rating}, {players} player(s)\n{synopsis_text}"
         return full_content
+
     return None
