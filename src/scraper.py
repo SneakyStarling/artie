@@ -243,7 +243,7 @@ def fetch_synopsis(game, config):
         except ValueError:
             pass  # Keep the original rating string if conversion fails
 
-        full_content = f"{developer}, {rating}, {players} player(s)\n{synopsis_text}"
+        full_content = str(f"{developer}, {rating}, {players} player(s)\n{synopsis_text}")
         return full_content
 
     return None
