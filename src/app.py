@@ -150,7 +150,7 @@ class App:
                     continue
                 if file_path.is_file() and self.is_valid_rom(file):
                     name = file_path.stem
-                    rom = Rom(filename=m3u_to_zip(file), name=name, path=file_path)
+                    rom = Rom(filename=file, name=name, path=file_path)
                     roms.append(rom)
         return roms
 
