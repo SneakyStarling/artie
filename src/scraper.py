@@ -221,22 +221,23 @@ def fetch_preview(game, config):
     return preview
 
 
-def fetch_synopsis(game, config):
+def fetch_synopsis(game, config, meta):
     synopsis = game["response"]["jeu"].get("synopsis", [])
-    players = game["response"]["jeu"].get("joueurs", {"text": "unknown"})
-    rating = game["response"]["jeu"].get("note", {"text": "no rating"})
-    developer = game["response"]["jeu"].get("developpeur", {"text": "unknown developer"})
 
     if not synopsis:
         return None
 
     synopsis_lang = config["synopsis"]["lang"]
     synopsis_text = next(
-        (item["text"] for item in synopsis if item["langue"] == synopsis_lang),
-        None
-    )
+        (item["text"] for item in synopsis if item["langue"] == synopsis_lang), None)
 
-    if synopsis_text:
+    if meta:
+        players = game["response"]["jeu"].get("joueurs", {"text": "unknown"})
+        rating = game["response"]["jeu"].get("note", {"text": "no rating"})
+        developer = game["response"]["jeu"].get("developpeur", {"text": "unknown developer"})
+        classification = game["response"]["jeu"].get("classifications", [])
+        classification_text = next(
+            (item["text"] for item in classification if item["type"] == "PEGI"), None)
         players_text = players.get("text", "unknown")
         rating_text = rating.get("text", "no rating")
         developer_text = developer.get("text", "unknown developer")
@@ -246,8 +247,9 @@ def fetch_synopsis(game, config):
             rating_text = str(round(float_rating / 20, 2))
         except ValueError:
             pass  # Keep the original rating string if conversion fails
+        full_content = f"{developer_text}, {rating_text}, {players_text} player(s), PEGI {classification_text}\n{synopsis_text}"
 
-        full_content = f"{developer_text}, {rating_text}, {players_text} player(s)\n{synopsis_text}"
-        return full_content
+    else:
+        full_content = synopsis_text
 
-    return None
+    return full_content
