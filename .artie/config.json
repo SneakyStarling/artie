@@ -492,7 +492,7 @@
         "box": "/mnt/mmc/MUOS/info/catalogue/Sega Mega Drive - Genesis/box/",
         "preview": "/mnt/mmc/MUOS/info/catalogue/Sega Mega Drive - Genesis/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Sega Mega Drive - Genesis/text/",
-        "identifiers": ["Mega Drive", "Genesis", "Sega Genesis", "Sega Mega Drive"],
+        "identifiers": ["Mega Drive", "MegaDrive", "Genesis", "Sega Genesis", "Sega Mega Drive"],
         "excludes": ["Mega Drive Hacks", "Genesis Hacks"]
       },
       {
