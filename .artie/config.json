@@ -75,7 +75,7 @@
         "identifiers": ["Amiga CD", "Commodore Amiga CD", "CD32"],
         "excludes": ["CDTV"]
       },
-      {
+            {
         "dir": "AMIGACDTV",
         "id": "129",
         "name": "Commodore Amiga CD",
@@ -273,9 +273,9 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Sega Dreamcast/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Sega Dreamcast/text/",
         "identifiers": ["Dreamcast", "Sega Dreamcast", "DC"],
-        "excludes": ["VMU"]
+        "excludes": []
       },
-      {
+            {
         "dir": "DOS",
         "id": "135",
         "name": "DOS",
@@ -283,7 +283,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/DOS/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/DOS/text/",
         "identifiers": ["DOS", "MS-DOS", "PC DOS"],
-        "excludes": ["Windows"]
+        "excludes": []
       },
       {
         "dir": "EASYRPG",
@@ -343,7 +343,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/FDS/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/FDS/text/",
         "identifiers": ["Famicom Disk System", "FDS", "Family Computer Disk System"],
-        "excludes": ["NES", "Famicom"]
+        "excludes": []
       },
       {
         "dir": "GB",
@@ -353,7 +353,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Nintendo Game Boy/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Nintendo Game Boy/text/",
         "identifiers": ["Game Boy", "GB", "Nintendo Game Boy"],
-        "excludes": ["GBC", "GBA"]
+        "excludes": ["GBC", "GBA", "SGB", "Super", "Advance", "Color"]
       },
       {
         "dir": "GBA",
@@ -363,7 +363,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Nintendo Game Boy Advance/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Nintendo Game Boy Advance/text/",
         "identifiers": ["Game Boy Advance", "GBA", "Nintendo Game Boy Advance"],
-        "excludes": ["GB", "GBC"]
+        "excludes": ["GBC"]
       },
       {
         "dir": "GBC",
@@ -373,7 +373,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Nintendo Game Boy Color/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Nintendo Game Boy Color/text/",
         "identifiers": ["Game Boy Color", "GBC", "Nintendo Game Boy Color"],
-        "excludes": ["GB", "GBA"]
+        "excludes": ["GBA"]
       },
       {
         "dir": "GG",
@@ -383,7 +383,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Sega Game Gear/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Sega Game Gear/text/",
         "identifiers": ["Game Gear", "GG", "Sega Game Gear"],
-        "excludes": ["Master System", "SMS"]
+        "excludes": []
       },
       {
         "dir": "GW",
@@ -493,7 +493,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Sega Mega Drive - Genesis/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Sega Mega Drive - Genesis/text/",
         "identifiers": ["Mega Drive", "Genesis", "Sega Genesis", "Sega Mega Drive"],
-        "excludes": ["Sega CD", "32X"]
+        "excludes": ["Mega Drive Hacks", "Genesis Hacks"]
       },
       {
         "dir": "MDMSU",
@@ -543,8 +543,8 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/MSX2/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/MSX2/text/",
         "identifiers": ["MSX2", "Microsoft MSX2"],
-        "excludes": ["MSX"]
-      }
+        "excludes": []
+      },
       {
         "dir": "N64",
         "id": "14",
@@ -613,7 +613,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Nintendo NES-Famicom/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Nintendo NES-Famicom/text/",
         "identifiers": ["NES", "Nintendo Entertainment System", "Famicom"],
-        "excludes": ["SNES", "FDS"]
+        "excludes": ["SNES", "FDS","Super"]
       },
       {
         "dir": "NGP",
@@ -683,7 +683,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/NEC PC Engine/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/NEC PC Engine/text/",
         "identifiers": ["TurboGrafx-16", "PC Engine", "PCE"],
-        "excludes": ["CD", "SuperGrafx"]
+        "excludes": ["SuperGrafx"]
       },
       {
         "dir": "PCECD",
@@ -763,7 +763,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/SATELLAVIEW/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/SATELLAVIEW/text/",
         "identifiers": ["Satellaview", "BS-X"],
-        "excludes": ["SNES"]
+        "excludes": []
       },
       {
         "dir": "SCUMMVM",
@@ -803,7 +803,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Nintendo SNES-SFC/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Nintendo SNES-SFC/text/",
         "identifiers": ["SNES", "Super Nintendo", "Super Famicom"],
-        "excludes": ["NES", "Satellaview"]
+        "excludes": []
       },
       {
         "dir": "SFCMSU",
@@ -823,7 +823,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/SGB/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/SGB/text/",
         "identifiers": ["Super Game Boy", "SGB"],
-        "excludes": ["Game Boy", "SNES"]
+        "excludes": []
       },
       {
         "dir": "SFX",
@@ -833,7 +833,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/SFX/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/SFX/text/",
         "identifiers": ["SuperGrafx", "PC Engine SuperGrafx"],
-        "excludes": ["PC Engine"]
+        "excludes": []
       },
       {
         "dir": "SUFAMI",
@@ -843,7 +843,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/SUFAMI/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/SUFAMI/text/",
         "identifiers": ["Sufami Turbo"],
-        "excludes": ["SNES"]
+        "excludes": []
       },
       {
         "dir": "THOMSON",
@@ -933,7 +933,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/VMU/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/VMU/text/",
         "identifiers": ["VMU", "Visual Memory Unit"],
-        "excludes": ["Dreamcast"]
+        "excludes": []
       },
       {
         "dir": "WASM4",
@@ -1005,7 +1005,7 @@
         "identifiers": ["ZX Spectrum", "Sinclair ZX Spectrum", "ZXS"],
         "excludes": ["ZX81"]
       },
-	        {
+      {
         "dir": "ATARI7800",
         "id": "41",
         "name": "Atari 7800",
@@ -1052,8 +1052,8 @@
         "box": "/mnt/mmc/MUOS/info/catalogue/PORTS/box/",
         "preview": "/mnt/mmc/MUOS/info/catalogue/PORTS/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/PORTS/text/",
-        "identifiers": ["Ports", "PC Ports", "Windows Ports"],
-        "excludes": ["DOS"]
+        "identifiers": ["Ports", "PC Ports"],
+        "excludes": []
       },
       {
         "dir": "PSPMINIS",
@@ -1073,7 +1073,7 @@
         "preview": "/mnt/mmc/MUOS/info/catalogue/Watara Supervision/preview/",
         "synopsis": "/mnt/mmc/MUOS/info/catalogue/Watara Supervision/text/",
         "identifiers": ["Watara Supervision", "Supervision"],
-        "excludes": ["WonderSwan"]
+        "excludes": []
       },
       {
         "dir": "WSC",
