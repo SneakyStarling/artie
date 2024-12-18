@@ -266,6 +266,7 @@ class App:
     def is_valid_rom(self, rom):
         invalid_extensions = {
             ".cue",
+            ".m3u",
             ".jpg",
             ".png",
             ".sub",
