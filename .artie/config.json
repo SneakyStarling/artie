@@ -1,5 +1,6 @@
 {
   "roms": "/mnt/sdcard/ROMS",
+  "roms_alt": "/mnt/mmc/ROMS",
   "logos": "assets/logos",
   "log_level": "info",
   "colors": {
@@ -18,6 +19,7 @@
     "content": {
       "synopsis": {
         "enabled": true,
+        "meta": true,
         "lang": "en"
       },
       "box": {
