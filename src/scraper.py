@@ -17,6 +17,7 @@ VALID_MEDIA_TYPES = {"box-2D", "box-3D", "mixrbv1", "mixrbv2", "ss"}
 
 DEBUG = True
 
+
 def get_image_files_without_extension(folder):
     return [
         f.stem for f in Path(folder).glob("*") if f.suffix.lower() in IMAGE_EXTENSIONS
@@ -174,7 +175,7 @@ def fetch_data(url):
 
 def get_game_data(system_id, rom_path, dev_id, dev_password, username, password):
     game_url = parse_find_game_url(
-        system_id, rom_path, dev_id, dev_password, username, password
+        system_id, m3u_to_zip(rom_path), dev_id, dev_password, username, password
     )
     return fetch_data(game_url)
 
@@ -183,6 +184,13 @@ def get_user_data(dev_id, dev_password, username, password):
     user_info_url = parse_user_info_url(dev_id, dev_password, username, password)
     return None
     # fetch_data(user_info_url)
+
+
+def m3u_to_zip(file_path):
+    if file_path.lower().endswith('.m3u'):
+        base_path = os.path.splitext(file_path)[0]
+        return f"{base_path}.zip"
+    return file_path
 
 
 def _fetch_media(medias, properties, regions):
