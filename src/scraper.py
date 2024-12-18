@@ -247,6 +247,7 @@ def fetch_synopsis(game, config, meta):
             rating_text = str(round(float_rating / 20, 2))
         except ValueError:
             pass  # Keep the original rating string if conversion fails
+
         full_content = f"{developer_text}, {rating_text}, {players_text} player(s), PEGI {classification_text}\n{synopsis_text}"
 
     else:
