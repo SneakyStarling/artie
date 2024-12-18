@@ -78,7 +78,6 @@ class App:
                         break
                     else:
                         self.systems_mapping[system_dir] = system
-
         return self.systems_mapping
 
     def load_config(self, config_file):
