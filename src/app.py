@@ -150,9 +150,15 @@ class App:
                     continue
                 if file_path.is_file() and self.is_valid_rom(file):
                     name = file_path.stem
-                    rom = Rom(filename=file, name=name, path=file_path)
+                    rom = Rom(filename=m3u_to_zip(file), name=name, path=file_path)
                     roms.append(rom)
         return roms
+
+    def m3u_to_zip(file_path):
+        if file_path.lower().endswith('.m3u'):
+            base_path = os.path.splitext(file_path)[0]
+            return f"{base_path}.zip"
+        return file_path
 
     def delete_files_in_directory(self, filenames, directory_path):
         directory = Path(directory_path)
@@ -261,7 +267,6 @@ class App:
             ".m3u",
             ".jpg",
             ".png",
-            ".img",
             ".sub",
             ".db",
             ".xml",

@@ -239,17 +239,21 @@ def fetch_synopsis(game, config, meta):
         classification = game["response"]["jeu"].get("classifications", [])
         classification_text = next(
             (item["text"] for item in classification if item["type"] == "PEGI"), None)
+        if classification_text == None:
+            classification_text = f", PEGI {classification_text}"
+        else:
+            classification_text = f""
         players_text = players.get("text", "unknown")
         rating_text = rating.get("text", "no rating")
         developer_text = developer.get("text", "unknown developer")
 
         try:
             float_rating = float(rating_text)
-            rating_text = str(round(float_rating / 20, 2))
+            rating_text = str(round(float_rating / 2, 1))
         except ValueError:
             pass  # Keep the original rating string if conversion fails
 
-        full_content = f"{developer_text}, {rating_text}, {players_text} player(s), PEGI {classification_text}\n{synopsis_text}"
+        full_content = f"{developer_text}, {rating_text}, {players_text} p{classification_text}\n{synopsis_text}"
 
     else:
         full_content = synopsis_text
