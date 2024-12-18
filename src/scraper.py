@@ -223,12 +223,10 @@ def fetch_preview(game, config):
 
 def fetch_synopsis(game, config):
     synopsis = game["response"]["jeu"].get("synopsis", [])
-    players = game["response"]["jeu"].get("joueurs", "unknown")
-    logger.log_info(players)
-    rating = game["response"]["jeu"].get("note", "no rating")
-    logger.log_info(rating)
-    developer = game["response"]["jeu"].get("developpeur", "unknown developer")
-    logger.log_info(developer)
+    players = game["response"]["jeu"].get("joueurs", {"text": "unknown"})
+    rating = game["response"]["jeu"].get("note", {"text": "no rating"})
+    developer = game["response"]["jeu"].get("developpeur", {"text": "unknown developer"})
+
     if not synopsis:
         return None
 
@@ -239,13 +237,17 @@ def fetch_synopsis(game, config):
     )
 
     if synopsis_text:
+        players_text = players.get("text", "unknown")
+        rating_text = rating.get("text", "no rating")
+        developer_text = developer.get("text", "unknown developer")
+
         try:
-            float_rating = float(rating)
-            rating = str(round(float_rating / 20, 2))
+            float_rating = float(rating_text)
+            rating_text = str(round(float_rating / 20, 2))
         except ValueError:
             pass  # Keep the original rating string if conversion fails
 
-        full_content = str(f"{developer}, {rating}, {players} player(s)\n{synopsis_text}")
+        full_content = f"{developer_text}, {rating_text}, {players_text} player(s)\n{synopsis_text}"
         return full_content
 
     return None

@@ -324,7 +324,6 @@ class App:
         if scraped_synopsis:
             destination: Path = synopsis_dir / f"{rom.name}.txt"
             self.save_file_to_disk(scraped_synopsis.encode("utf-8"), destination)
-            logger.log_info(scraped_synopsis)
         return scraped_box, scraped_preview, scraped_synopsis, rom.name
 
     def load_roms(self) -> None:
