@@ -279,7 +279,7 @@ def fetch_synopsis(game, config, meta):
         except ValueError:
             pass  # Keep the original rating string if conversion fails
 
-        full_content = f"{developer_text}, {rating_text}, {players_text} p{classification_text}\n{synopsis_text}"
+        full_content = f"{developer_text}, {rating_text}, {players_text} p{classification_text} \n {synopsis_text}"
 
     else:
         full_content = synopsis_text
