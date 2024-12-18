@@ -137,13 +137,6 @@ class App:
             [system for system in available_systems if system in self.systems_mapping]
         )
 
-    def m3u_rom_path(file_path):
-        if filename.lower().endswith('.m3u'):
-            with open(file_path, 'r') as file:
-                first_line = file.readline().strip()
-            return first_line
-        else:
-            return file_path
 
     def get_roms(self, system: str) -> list[Rom]:
         roms = []
