@@ -51,6 +51,7 @@ class App:
         self.box_enabled = True
         self.preview_enabled = True
         self.synopsis_enabled = True
+        self.meta_enabled = True
         self.threads = 1
         self.username = ""
         self.password = ""
@@ -70,6 +71,8 @@ class App:
             sys.exit()
 
         self.roms_path = self.config.get("roms")
+        if not Path(self.roms_path).exists() or not any(Path(self.roms_path).iterdir()):
+            self.roms_path = self.config.get("roms_alt")
         self.systems_logo_path = self.config.get("logos")
         self.colors = self.config.get("colors")
         self.dev_id = self.config.get("screenscraper").get("devid")
@@ -81,6 +84,7 @@ class App:
         self.box_enabled = self.content["box"]["enabled"]
         self.preview_enabled = self.content["preview"]["enabled"]
         self.synopsis_enabled = self.content["synopsis"]["enabled"]
+        self.meta_enabled = self.content["synopsis"]["meta"]
         self.get_user_threads()
         for system in self.config["screenscraper"]["systems"]:
             self.systems_mapping[system["dir"].lower()] = system
@@ -307,7 +311,7 @@ class App:
                 if self.preview_enabled:
                     scraped_preview = fetch_preview(game, content)
                 if self.synopsis_enabled:
-                    scraped_synopsis = fetch_synopsis(game, content)
+                    scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled)
         except Exception as e:
             logger.log_error(f"Error scraping {rom.name}: {e}")
 
