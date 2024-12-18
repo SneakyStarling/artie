@@ -181,7 +181,8 @@ def get_game_data(system_id, rom_path, dev_id, dev_password, username, password)
 
 def get_user_data(dev_id, dev_password, username, password):
     user_info_url = parse_user_info_url(dev_id, dev_password, username, password)
-    return fetch_data(user_info_url)
+    return None
+    # fetch_data(user_info_url)
 
 
 def _fetch_media(medias, properties, regions):
