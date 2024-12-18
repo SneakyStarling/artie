@@ -74,7 +74,8 @@ class App:
 
                     if any(identifier.lower() in dir_lower for identifier in system["identifiers"]) and \
                             all(exclude.lower() not in dir_lower for exclude in system["excludes"]):
-                        self.systems_mapping[dir_lower] = system
+                        logger.log_info(system)
+                        # self.systems_mapping[dir_lower] = system
                         break
 
         return self.systems_mapping
