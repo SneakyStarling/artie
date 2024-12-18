@@ -57,6 +57,28 @@ class App:
         self.password = ""
         self.gui = GUI()
 
+    def update_systems_mapping(self):
+        self.systems_mapping = {}
+        roms_dir = self.config["roms"]
+
+        for system in self.config["screenscraper"]["systems"]:
+            system_dir = system["dir"].lower()
+
+            # Check for exact match first
+            if os.path.isdir(os.path.join(roms_dir, system_dir)):
+                self.systems_mapping[system_dir] = system
+            else:
+                # Check for partial matches using identifiers and excludes
+                for dir_name in os.listdir(roms_dir):
+                    dir_lower = dir_name.lower()
+
+                    if any(identifier.lower() in dir_lower for identifier in system["identifiers"]) and \
+                            all(exclude.lower() not in dir_lower for exclude in system["excludes"]):
+                        self.systems_mapping[dir_lower] = system
+                        break
+
+        return self.systems_mapping
+
     def load_config(self, config_file):
         with open(config_file, "r") as file:
             file_contents = file.read()
@@ -86,14 +108,15 @@ class App:
         self.synopsis_enabled = self.content["synopsis"]["enabled"]
         self.meta_enabled = self.content["synopsis"]["meta"]
         self.get_user_threads()
-        for system in self.config["screenscraper"]["systems"]:
-            self.systems_mapping[system["dir"].lower()] = system
+
+        self.update_systems_mapping()
 
         self.gui.COLOR_PRIMARY = self.colors.get("primary")
         self.gui.COLOR_PRIMARY_DARK = self.colors.get("primary_dark")
         self.gui.COLOR_SECONDARY = self.colors.get("secondary")
         self.gui.COLOR_SECONDARY_LIGHT = self.colors.get("secondary_light")
         self.gui.COLOR_SECONDARY_DARK = self.colors.get("secondary_dark")
+
 
     def setup_logging(self):
         log_level_str = self.config.get("log_level", "INFO").upper()
