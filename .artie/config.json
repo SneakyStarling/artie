@@ -20,6 +20,7 @@
       "synopsis": {
         "enabled": true,
         "meta": true,
+        "class": false,
         "lang": "en"
       },
       "box": {
