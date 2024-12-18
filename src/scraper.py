@@ -224,9 +224,11 @@ def fetch_preview(game, config):
 def fetch_synopsis(game, config):
     synopsis = game["response"]["jeu"].get("synopsis", [])
     players = game["response"]["jeu"].get("joueurs", "unknown")
+    logger.log_info(players)
     rating = game["response"]["jeu"].get("note", "no rating")
+    logger.log_info(rating)
     developer = game["response"]["jeu"].get("developpeur", "unknown developer")
-
+    logger.log_info(developer)
     if not synopsis:
         return None
 
