@@ -59,24 +59,25 @@ class App:
 
     def update_systems_mapping(self):
         self.systems_mapping = {}
-        roms_dir = self.config["roms"]
 
         for system in self.config["screenscraper"]["systems"]:
             system_dir = system["dir"].lower()
 
             # Check for exact match first
-            if os.path.isdir(os.path.join(roms_dir, system_dir)):
+            if os.path.isdir(os.path.join(self.roms_path, system_dir)):
                 self.systems_mapping[system_dir] = system
             else:
                 # Check for partial matches using identifiers and excludes
-                for dir_name in os.listdir(roms_dir):
+                for dir_name in os.listdir(self.roms_path):
                     dir_lower = dir_name.lower()
 
                     if any(identifier.lower() in dir_lower for identifier in system["identifiers"]) and \
                             all(exclude.lower() not in dir_lower for exclude in system["excludes"]):
                         logger.log_info(system)
-                        # self.systems_mapping[dir_lower] = system
+                        self.systems_mapping[dir_lower] = system
                         break
+                    else:
+                        self.systems_mapping[system_dir] = system
 
         return self.systems_mapping
 
