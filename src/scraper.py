@@ -64,6 +64,8 @@ def file_size(file_path):
 
 
 def parse_find_game_url(system_id, rom_path, dev_id, dev_password, username, password):
+    if rom_path.suffix[1:] == "m3u":
+        return parse_find_m3u_game_url(system_id, rom_path, dev_id, dev_password, username, password)
     params = {
         "devid": base64.b64decode(dev_id).decode(),
         "devpassword": base64.b64decode(dev_password).decode(),
@@ -84,6 +86,25 @@ def parse_find_game_url(system_id, rom_path, dev_id, dev_password, username, pas
         logger.log_error(f"Error encoding URL: {e}. ROM params: {params}")
         return None
 
+
+def parse_find_m3u_game_url(system_id, rom_path, dev_id, dev_password, username, password):
+    params = {
+        "devid": base64.b64decode(dev_id).decode(),
+        "devpassword": base64.b64decode(dev_password).decode(),
+        "softname": "crossmix",
+        "output": "json",
+        "ssid": username,
+        "sspassword": password,
+        "systemeid": system_id,
+        "romtype": "rom",
+        "romnom": f"{clean_rom_name(rom_path)}.zip",
+    }
+    try:
+        return urlunparse(urlparse(GAME_INFO_URL)._replace(query=urlencode(params)))
+    except UnicodeDecodeError as e:
+        logger.log_debug("Params: %s")
+        logger.log_error(f"Error encoding URL: {e}. ROM params: {params}")
+        return None
 
 def parse_user_info_url(dev_id, dev_password, username, password):
     params = {

@@ -150,6 +150,7 @@ class App:
                 if file.startswith("."):
                     continue
                 if file_path.is_file() and self.is_valid_rom(file):
+                    logger.log_info(file_path)
                     name = file_path.stem
                     rom = Rom(filename=file, name=name, path=file_path)
                     roms.append(rom)
@@ -259,7 +260,6 @@ class App:
     def is_valid_rom(self, rom):
         invalid_extensions = {
             ".cue",
-            ".m3u",
             ".jpg",
             ".png",
             ".sub",
