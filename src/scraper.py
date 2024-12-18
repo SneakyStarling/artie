@@ -242,9 +242,9 @@ def fetch_synopsis(game, config, meta):
             (item["text"] for item in classification if item["type"] == "PEGI"), None)
         esrb_text = next(
             (item["text"] for item in classification if item["type"] == "ESRB"), None)
-        if pegi_text != None:
+        if pegi_text is not None:
             classification_text = f", PEGI {pegi_text}"
-        elif esrb_text != None:
+        elif esrb_text is not None:
             classification_text = f", ESRB {esrb_text}"
         else:
             classification_text = f""
