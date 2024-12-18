@@ -52,7 +52,6 @@ class App:
         self.preview_enabled = True
         self.synopsis_enabled = True
         self.meta_enabled = True
-        self.class_enabled = False
         self.threads = 1
         self.username = ""
         self.password = ""
@@ -86,7 +85,6 @@ class App:
         self.preview_enabled = self.content["preview"]["enabled"]
         self.synopsis_enabled = self.content["synopsis"]["enabled"]
         self.meta_enabled = self.content["synopsis"]["meta"]
-        self.class_enabled = self.content["synopsis"]["class"]
         self.get_user_threads()
         for system in self.config["screenscraper"]["systems"]:
             self.systems_mapping[system["dir"].lower()] = system
@@ -313,7 +311,7 @@ class App:
                 if self.preview_enabled:
                     scraped_preview = fetch_preview(game, content)
                 if self.synopsis_enabled:
-                    scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled, self.class_enabled)
+                    scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled)
         except Exception as e:
             logger.log_error(f"Error scraping {rom.name}: {e}")
 

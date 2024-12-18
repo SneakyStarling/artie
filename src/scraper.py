@@ -244,7 +244,7 @@ def fetch_preview(game, config):
     return preview
 
 
-def fetch_synopsis(game, config, meta, class_enabled):
+def fetch_synopsis(game, config, meta):
     synopsis = game["response"]["jeu"].get("synopsis", [])
 
     if not synopsis:
@@ -263,9 +263,7 @@ def fetch_synopsis(game, config, meta, class_enabled):
             (item["text"] for item in classification if item["type"] == "PEGI"), None)
         esrb_text = next(
             (item["text"] for item in classification if item["type"] == "ESRB"), None)
-        if not class_enabled:
-            classification_text = f""
-        elif pegi_text is not None:
+        if pegi_text is not None:
             classification_text = f", PEGI {pegi_text}"
         elif esrb_text is not None:
             classification_text = f", ESRB {esrb_text}"
