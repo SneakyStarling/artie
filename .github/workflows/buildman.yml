@@ -1,4 +1,4 @@
-name: Manual Release
+name: Manual Build
 
 on: 
   workflow_dispatch
@@ -32,12 +32,12 @@ jobs:
 
       - name: Bundle App
         run: |
-          mkdir -p Artie/.artie && \
-          cp -r ./dist/app ./assets ./config.json artie/.artie
-          cp -r mux_launch.sh artie
+          mkdir -p build_files/mnt/mmc/MUOS/application/Artie/.artie && \
+          cp -r ./dist/app ./assets ./config.json build_files/mnt/mmc/MUOS/application/Artie/.artie
+          cp -r mux_launch.sh build_files/mnt/mmc/MUOS/application/Artie
 
       - name: Upload Artie.zip
         uses: actions/upload-artifact@v4
         with:
           name: Artie
-          path: Artie
+          path: build_files
