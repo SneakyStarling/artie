@@ -32,12 +32,12 @@ jobs:
 
       - name: Bundle App
         run: |
-          mkdir -p .artie && \
-          cp -r ./dist/app ./assets ./config.json .artie
-          zip -r Artie.zip .artie ./Artie\ mux_launch.sh
+          mkdir -p Artie/.artie && \
+          cp -r ./dist/app ./assets ./config.json artie/.artie
+          cp -r mux_launch.sh artie
 
       - name: Upload Artie.zip
         uses: actions/upload-artifact@v4
         with:
-          name: Artie.zip
-          path: Artie.zip
+          name: Artie
+          path: Artie
