@@ -147,7 +147,7 @@ class App:
             input.reset_input()
             skip_input_check = False
         else:
-            input.check_input_events(input_device)
+            input.check_input_events(self.input_device)
 
         if input.key_pressed("MENUF"):
             self.gui.draw_end()
