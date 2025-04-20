@@ -130,14 +130,14 @@ class App:
         logger.setup_logger(log_level)
 
     def start(self, config_file: str) -> None:
-        self.setup_logging()
-        logger.log_debug(f"Artie Scraper v{VERSION}")
         self.gui.draw_start()
         self.gui.screen_reset()
+        self.gui.display_picture("splash_resized.png", position=(80, 0), max_width=720, max_height=720)
+        self.setup_logging()
+        logger.log_debug(f"Artie Scraper v{VERSION}")
+        self.load_config(config_file)
         main_gui = self.gui.create_image()
         self.gui.draw_active(main_gui)
-        self.gui.display_picture("splash_resized.png", position=(80, 0), max_width=720, max_height=720)
-        self.load_config(config_file)
         self.load_emulators()
 
     def update(self) -> None:
