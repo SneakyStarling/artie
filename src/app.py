@@ -240,13 +240,12 @@ class App:
         available_systems = self.get_available_systems()
 
         if available_systems:
-            if input.key_pressed("DY"):
-                if input.current_value == 1:
-                    if selected_position < len(available_systems) - 1:
-                        selected_position += 1
-                elif input.current_value == -1:
-                    if selected_position > 0:
-                        selected_position -= 1
+            if input.key_pressed("DY",1):
+                if selected_position < len(available_systems) - 1:
+                    selected_position += 1
+            elif input.key_pressed("DY", -1):
+                if selected_position > 0:
+                    selected_position -= 1
             elif input.key_pressed("A"):
                 selected_system = available_systems[selected_position]
                 current_window = "roms"
@@ -498,13 +497,12 @@ class App:
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
             exit_menu = True
-        elif input.key_pressed("DY"):
-            if input.current_value == 1:
-                if roms_selected_position < len(roms_to_scrape) - 1:
-                    roms_selected_position += 1
-            elif input.current_value == -1:
-                if roms_selected_position > 0:
-                    roms_selected_position -= 1
+        elif input.key_pressed("DY", 1):
+            if roms_selected_position < len(roms_to_scrape) - 1:
+                roms_selected_position += 1
+        elif input.key_pressed("DY", -1):
+            if roms_selected_position > 0:
+                roms_selected_position -= 1
         elif input.key_pressed("L1"):
             if roms_selected_position > 0:
                 roms_selected_position = max(0, roms_selected_position - max_elem)

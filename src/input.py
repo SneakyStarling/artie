@@ -97,9 +97,15 @@ def cleanup_input():
 
 
 def key_pressed(key_code_name, key_value=99):
+    global current_value
     if current_code_name == key_code_name:
         if key_value != 99:
-            return current_value == key_value
+            if current_value == key_value:
+                current_value = 0
+                return True
+            else:
+                return False
+        current_value = 0
         return True
 
 
