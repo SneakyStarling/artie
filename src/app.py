@@ -59,7 +59,6 @@ class App:
         self.username = ""
         self.password = ""
         self.gui = GUI()
-        self.input_device = None
         self.sub_dirs = False
 
     def update_systems_mapping(self):
@@ -134,7 +133,6 @@ class App:
         self.setup_logging()
         logger.log_debug(f"Artie Scraper v{VERSION}")
         self.load_config(config_file)
-        self.input_device = input.open_input_device()
         self.gui.draw_start()
         self.gui.screen_reset()
         main_gui = self.gui.create_image()
@@ -147,7 +145,7 @@ class App:
             input.reset_input()
             skip_input_check = False
         else:
-            input.check_input_events(self.input_device)
+            input.check_input()
 
         if input.key_pressed("MENUF"):
             self.gui.draw_end()
