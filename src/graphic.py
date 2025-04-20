@@ -109,6 +109,19 @@ class GUI:
                 outline=outline,
             )
 
+    def display_picture(self, filename, position=(0, 0), max_width=None, max_height=None):
+        try:
+            img = Image.open(filename).convert("RGBA")
+            if max_width or max_height:
+                img.thumbnail((max_width or img.width, max_height or img.height), Image.LANCZOS)
+            if self.activeImage is None:
+                self.activeImage = self.create_image()
+                self.activeDraw = ImageDraw.Draw(self.activeImage)
+            self.activeImage.paste(img, position, img)
+            self.draw_paint()
+        except Exception as e:
+            print(f"Failed to load or display image: {e}")
+
     def draw_log(self, text, fill=COLOR_PRIMARY, outline=COLOR_PRIMARY_DARK, width=500):
         # Center the rectangle horizontally
         x = (self.screen_width - width) / 2

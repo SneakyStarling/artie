@@ -43,6 +43,9 @@ class App:
     LOG_WAIT = 2
 
     def __init__(self):
+        self.colors = None
+        self.dev_id = None
+        self.dev_password = None
         self.config = {}
         self.systems_mapping = {}
         self.roms_path = ""
@@ -121,20 +124,20 @@ class App:
         self.gui.COLOR_SECONDARY_LIGHT = self.colors.get("secondary_light")
         self.gui.COLOR_SECONDARY_DARK = self.colors.get("secondary_dark")
 
-
     def setup_logging(self):
         log_level_str = self.config.get("log_level", "INFO").upper()
         log_level = getattr(logging, log_level_str, logging.INFO)
         logger.setup_logger(log_level)
 
     def start(self, config_file: str) -> None:
-        self.load_config(config_file)
         self.setup_logging()
         logger.log_debug(f"Artie Scraper v{VERSION}")
         self.gui.draw_start()
         self.gui.screen_reset()
         main_gui = self.gui.create_image()
         self.gui.draw_active(main_gui)
+        self.gui.display_picture("splash_resized.png", position=(80, 0), max_width=720, max_height=720)
+        self.load_config(config_file)
         self.load_emulators()
 
     def update(self) -> None:
@@ -164,7 +167,6 @@ class App:
             [system for system in available_systems if system in self.systems_mapping]
         )
 
-
     def get_roms(self, system: str) -> list[Rom]:
         roms = []
         system_path = Path(self.roms_path) / system
@@ -186,7 +188,8 @@ class App:
                     roms.append(rom)
         return roms
 
-    def delete_files_in_directory(self, filenames, directory_path):
+    @staticmethod
+    def delete_files_in_directory(filenames, directory_path):
         directory = Path(directory_path)
         if directory.is_dir():
             for file in directory.iterdir():
@@ -209,7 +212,6 @@ class App:
                 self.delete_files_in_directory(roms, system.get(media_type, ""))
 
     def draw_available_systems(self, available_systems: List[str]) -> None:
-        max_elem = 11
         start_idx = (selected_position // max_elem) * max_elem
         end_idx = start_idx + max_elem
         for i, system in enumerate(available_systems[start_idx:end_idx]):
@@ -287,7 +289,8 @@ class App:
 
         self.gui.draw_paint()
 
-    def is_valid_rom(self, rom):
+    @staticmethod
+    def is_valid_rom(rom):
         invalid_extensions = {
             ".cue",
             ".jpg",
@@ -303,7 +306,8 @@ class App:
         }
         return os.path.splitext(rom)[1] not in invalid_extensions
 
-    def save_file_to_disk(self, data, destination):
+    @staticmethod
+    def save_file_to_disk(data, destination):
         check_destination(destination)
         destination.write_bytes(data)
         logger.log_debug(f"Saved file to {destination}")
@@ -349,6 +353,14 @@ class App:
 
     def process_rom(self, rom, system_id, box_dir, preview_dir, synopsis_dir):
         scraped_box, scraped_preview, scraped_synopsis = self.scrape(rom, system_id)
+        # I've noticed in some cases a scrape fails but succeeds on the second try, the scrapper.fr might be
+        # overwhelmed, let's give it a short break and try again.
+        if (self.box_enabled and scraped_box is None) or \
+                (self.preview_enabled and scraped_preview is None) or \
+                (self.synopsis_enabled and scraped_synopsis is None):
+            time.sleep(0.5)
+            scraped_box, scraped_preview, scraped_synopsis = self.scrape(rom, system_id)
+
         if scraped_box:
             destination: Path = box_dir / f"{rom.name}.png"
             self.save_file_to_disk(scraped_box, destination)
