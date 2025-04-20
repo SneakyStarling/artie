@@ -36,21 +36,8 @@ jobs:
           cp -r ./dist/app ./assets ./config.json .artie
           zip -r Artie.zip .artie ./Artie\ Scraper.sh
 
-      - name: Upload assets
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{startsWith(github.ref, 'refs/tags/') }}
+      - name: Upload Artie.zip
+        uses: actions/upload-artifact@v4
         with:
-          files: Artie.zip
-
-      - name: Configure Git
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Commit and push changes
-        run: |
-          git add .
-          git commit -m "Add Artie.zip file"
-          git push
+          name: Artie.zip
+          path: Artie.zip
