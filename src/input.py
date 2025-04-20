@@ -52,7 +52,7 @@ def check_input(device_path="/dev/input/event1"):
 
     try:
         events_processed = 0
-        while True:  # Process all available events
+        while True:
             r, _, _ = select.select([input_file], [], [], 0)
             if not r:
                 break
@@ -63,14 +63,16 @@ def check_input(device_path="/dev/input/event1"):
 
             events_processed += 1
 
-            # Parse event
-            _, _, _, key_code, key_value = struct.unpack("llHHI", event)
+            # FIX 1: Use correct format for signed value ('i' instead of 'I')
+            _, _, _, key_code, key_value = struct.unpack("llHHi", event)  # Changed to 'i'
 
-            # Normalize value while preserving -1/1 distinction
-            normalized_value = 0
-            if key_value == 1:
+            # FIX 2: Proper value normalization
+            if key_value == 0:
+                normalized_value = 0
+            elif key_value == 1:
                 normalized_value = 1
-            elif key_value > 1:  # Handle analog triggers or pressure-sensitive buttons
+            else:
+                # Handle analog/directional inputs
                 normalized_value = -1 if key_value < 0 else 1
 
             # Update state tracking
@@ -94,17 +96,17 @@ def check_input(device_path="/dev/input/event1"):
         return False
 
 
-def key_pressed(key_code_name, key_value=1):  # Changed default to 1
-    # Find matching key codes
+def key_pressed(key_code_name, key_value=1):
     target_codes = [code for code, name in KEY_MAPPING.items() if name == key_code_name]
 
-    # Check all possible code/value combinations
     for code in target_codes:
-        # Handle both specified value and default (1)
-        check_values = [key_value] if key_value in (-1, 1) else [-1, 1]
-
-        for value in check_values:
-            if (code, value) in active_buttons:
+        # FIX 3: Check for exact value matches
+        if key_value in (-1, 1):
+            if (code, key_value) in active_buttons:
+                return True
+        else:
+            # Check both directions if no specific value requested
+            if (code, -1) in active_buttons or (code, 1) in active_buttons:
                 return True
     return False
 
