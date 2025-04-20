@@ -1,4 +1,5 @@
 import struct
+import select
 
 from logger import LoggerSingleton as logger
 
@@ -23,25 +24,38 @@ KEY_MAPPING = {
 current_code = 0
 current_code_name = ""
 current_value = 0
+input_device = None
 
 
-def check_input(device_path="/dev/input/event1"):
+def open_input_device(device_path="/dev/input/event1"):
+    """Open the input device and return the file handle."""
+    fd = open(device_path, "rb")
+    fd.setblocking(False)  # Make non-blocking
+    input_device = fd
+    return fd
+
+
+def check_input_events(file_handle=input_device, timeout=None):
     global current_code, current_code_name, current_value
-    with open(device_path, "rb") as f:
-        while True:
-            event = f.read(24)
-            if event:
-                _, _, _, key_code, key_value = struct.unpack("llHHI", event)
-                if key_value != 0:
-                    if key_value != 1:
-                        key_value = -1
-                    current_code = key_code
-                    current_code_name = KEY_MAPPING.get(current_code, str(current_code))
-                    current_value = key_value
-                    logger.log_debug(
-                        f"Key pressed: {current_code_name}, value: {current_value}"
-                    )
-                    return
+    # Use select to efficiently wait for data
+    r, _, _ = select.select([file_handle], [], [], timeout)
+
+    if r:  # If the file is ready for reading
+        event = file_handle.read(24)
+        if event:
+            _, _, _, key_code, key_value = struct.unpack("llHHI", event)
+            if key_value != 0:
+                if key_value != 1:
+                    key_value = -1
+                current_code = key_code
+                current_code_name = KEY_MAPPING.get(current_code, str(current_code))
+                current_value = key_value
+                logger.log_debug(
+                    f"Key pressed: {current_code_name}, value: {current_value}"
+                )
+                return True
+
+    return False
 
 
 def key_pressed(key_code_name, key_value=99):

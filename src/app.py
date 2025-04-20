@@ -130,14 +130,14 @@ class App:
         logger.setup_logger(log_level)
 
     def start(self, config_file: str) -> None:
-        self.gui.draw_start()
-        self.gui.screen_reset()
-        self.gui.display_picture("splash_resized.png", position=(80, 0), max_width=720, max_height=720)
         self.setup_logging()
         logger.log_debug(f"Artie Scraper v{VERSION}")
-        self.load_config(config_file)
+        self.gui.draw_start()
+        self.gui.screen_reset()
+        input.open_input_device()
         main_gui = self.gui.create_image()
         self.gui.draw_active(main_gui)
+        self.load_config(config_file)
         self.load_emulators()
 
     def update(self) -> None:
@@ -146,7 +146,7 @@ class App:
             input.reset_input()
             skip_input_check = False
         else:
-            input.check_input()
+            input.check_input_events()
 
         if input.key_pressed("MENUF"):
             self.gui.draw_end()
