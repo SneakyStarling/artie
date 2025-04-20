@@ -45,3 +45,4 @@ jobs:
         with:
           name: Artie
           path: build_files
+          include-hidden-files: true
