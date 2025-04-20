@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 from typing import List
 
+
 import input
 from graphic import GUI
 from logger import LoggerSingleton as logger
@@ -603,13 +604,14 @@ class App:
         selected: bool,
         image_path: str = None,
     ) -> None:
-        self.gui.draw_rectangle_r(
-            [pos[0], pos[1], pos[0] + width, pos[1] + 32],
-            5,
-            fill=(
-                self.gui.COLOR_PRIMARY if selected else self.gui.COLOR_SECONDARY_LIGHT
-            ),
-        )
+        if selected:
+            self.gui.draw_rectangle_r(
+                [pos[0], pos[1], pos[0] + width, pos[1] + 32],
+                5,
+                fill=(
+                    self.gui.COLOR_PRIMARY if selected else self.gui.COLOR_SECONDARY_LIGHT
+                ),
+            )
 
         text_offset_x = pos[0] + 5
         if image_path:
