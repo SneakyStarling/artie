@@ -56,6 +56,7 @@ class App:
         self.username = ""
         self.password = ""
         self.gui = GUI()
+        self.sub_dirs = False
 
     def update_systems_mapping(self):
         self.systems_mapping = {}
@@ -108,6 +109,8 @@ class App:
         self.preview_enabled = self.content["preview"]["enabled"]
         self.synopsis_enabled = self.content["synopsis"]["enabled"]
         self.meta_enabled = self.content["synopsis"]["meta"]
+
+        self.sub_dirs = self.config.get("sub_dirs")
         self.get_user_threads()
 
         self.update_systems_mapping()
@@ -167,7 +170,8 @@ class App:
         system_path = Path(self.roms_path) / system
 
         for root, dirs, files in os.walk(system_path):
-            dirs[:] = [d for d in dirs if not d.startswith(".")]
+            if self.sub_dirs:
+                dirs[:] = [d for d in dirs if not d.startswith(".")]
 
             for file in files:
                 file_path = Path(root) / file

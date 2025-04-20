@@ -3,6 +3,7 @@
   "roms_alt": "/mnt/mmc/ROMS",
   "logos": "assets/logos",
   "log_level": "info",
+  "sub_dirs": false,
   "colors": {
     "primary": "#bb7200",
     "primary_dark": "#7f4f00",
