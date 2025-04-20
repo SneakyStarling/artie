@@ -96,7 +96,7 @@ def parse_find_m3u_game_url(system_id, rom_path, dev_id, dev_password, username,
         "ssid": username,
         "sspassword": password,
         "systemeid": system_id,
-        "romtype": "rom",
+        # "romtype": "rom",
         "romnom": f"{clean_rom_name(rom_path)}.zip",
     }
     try:

@@ -172,6 +172,8 @@ class App:
         for root, dirs, files in os.walk(system_path):
             if self.sub_dirs:
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
+            else:
+                dirs[:] = []
 
             for file in files:
                 file_path = Path(root) / file
