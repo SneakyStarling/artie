@@ -24,19 +24,17 @@ KEY_MAPPING = {
 current_code = 0
 current_code_name = ""
 current_value = 0
-input_device = None
 
 
 def open_input_device(device_path="/dev/input/event1"):
-    """Open the input device and return the file handle."""
     fd = open(device_path, "rb")
     fd.setblocking(False)  # Make non-blocking
-    input_device = fd
     return fd
 
 
-def check_input_events(file_handle=input_device, timeout=None):
+def check_input_events(file_handle, timeout=0):
     global current_code, current_code_name, current_value
+
     # Use select to efficiently wait for data
     r, _, _ = select.select([file_handle], [], [], timeout)
 
