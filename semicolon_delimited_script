@@ -1,3 +1,0 @@
-pip install -r /src/requirements.txt
-pyinstaller --onefile /src/src/app.py
-
