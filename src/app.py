@@ -234,7 +234,8 @@ class App:
         self.button_circle((170, 450), "X", "Delete")
 
     def load_emulators(self) -> None:
-        global selected_position, selected_system, current_window, skip_input_check, available_systems
+        global selected_position, selected_system, current_window, skip_input_check, available_systems, \
+            roms_list, roms_to_scrape
 
         self.gui.draw_clear()
         self.gui.draw_rectangle_r([10, 40, 630, 440], 15)
@@ -257,6 +258,8 @@ class App:
                     selected_position -= 1
             elif input.key_pressed(input.A):
                 selected_system = available_systems[selected_position]
+                roms_list = None
+                roms_to_scrape = None
                 current_window = "roms"
                 self.gui.draw_log("Checking existing media...")
                 self.gui.draw_paint()
