@@ -34,6 +34,11 @@ skip_input_check = False
 
 roms_list = None
 available_systems = None
+roms_to_scrape = None
+
+roms_without_box = None
+roms_without_preview = None
+roms_without_synopsis = None
 
 
 class Rom:
@@ -377,17 +382,10 @@ class App:
         return scraped_box, scraped_preview, scraped_synopsis, rom.name
 
     def load_roms(self) -> None:
-        global selected_position, current_window, roms_selected_position, skip_input_check, selected_system, roms_list
+        global selected_position, current_window, roms_selected_position, skip_input_check, \
+            selected_system, roms_list, roms_to_scrape, roms_without_box, roms_without_preview, roms_without_synopsis
 
         exit_menu = False
-        if roms_list is None:
-            roms_list = self.get_roms(selected_system)
-            if not roms_list:
-                self.gui.draw_log(f"No roms found in {selected_system}...")
-                self.gui.draw_paint()
-                time.sleep(self.LOG_WAIT)
-                self.gui.draw_clear()
-                exit_menu = True
 
         system = self.systems_mapping.get(selected_system)
         if not system:
@@ -397,46 +395,56 @@ class App:
             self.gui.draw_clear()
             exit_menu = True
 
+        if roms_list is None:
+            roms_list = self.get_roms(selected_system)
+            if not roms_list:
+                self.gui.draw_log(f"No roms found in {selected_system}...")
+                self.gui.draw_paint()
+                time.sleep(self.LOG_WAIT)
+                self.gui.draw_clear()
+                exit_menu = True
+
         box_dir = Path(system["box"])
         preview_dir = Path(system["preview"])
         synopsis_dir = Path(system["synopsis"])
         system_id = system["id"]
 
-        if self.box_enabled and not box_dir.exists():
-            box_dir.mkdir(parents=True, exist_ok=True)
-            roms_without_box: List[Rom] = roms_list
-        elif self.box_enabled:
-            box_files = get_image_files_without_extension(box_dir)
-            roms_without_box = [rom for rom in roms_list if rom.name not in box_files]
-        else:
-            roms_without_box = []
+        if roms_to_scrape is None:
+            if self.box_enabled and not box_dir.exists():
+                box_dir.mkdir(parents=True, exist_ok=True)
+                roms_without_box: List[Rom] = roms_list
+            elif self.box_enabled:
+                box_files = get_image_files_without_extension(box_dir)
+                roms_without_box = [rom for rom in roms_list if rom.name not in box_files]
+            else:
+                roms_without_box = []
 
-        if self.preview_enabled and not preview_dir.exists():
-            preview_dir.mkdir(parents=True, exist_ok=True)
-            roms_without_preview: List[Rom] = roms_list
-        elif self.preview_enabled:
-            preview_files = get_image_files_without_extension(preview_dir)
-            roms_without_preview = [
-                rom for rom in roms_list if rom.name not in preview_files
-            ]
-        else:
-            roms_without_preview = []
+            if self.preview_enabled and not preview_dir.exists():
+                preview_dir.mkdir(parents=True, exist_ok=True)
+                roms_without_preview: List[Rom] = roms_list
+            elif self.preview_enabled:
+                preview_files = get_image_files_without_extension(preview_dir)
+                roms_without_preview = [
+                    rom for rom in roms_list if rom.name not in preview_files
+                ]
+            else:
+                roms_without_preview = []
 
-        if self.synopsis_enabled and not synopsis_dir.exists():
-            synopsis_dir.mkdir(parents=True, exist_ok=True)
-            roms_without_synopsis: List[Rom] = roms_list
-        elif self.synopsis_enabled:
-            synopsis_files = get_txt_files_without_extension(synopsis_dir)
-            roms_without_synopsis = [
-                rom for rom in roms_list if rom.name not in synopsis_files
-            ]
-        else:
-            roms_without_synopsis = []
+            if self.synopsis_enabled and not synopsis_dir.exists():
+                synopsis_dir.mkdir(parents=True, exist_ok=True)
+                roms_without_synopsis: List[Rom] = roms_list
+            elif self.synopsis_enabled:
+                synopsis_files = get_txt_files_without_extension(synopsis_dir)
+                roms_without_synopsis = [
+                    rom for rom in roms_list if rom.name not in synopsis_files
+                ]
+            else:
+                roms_without_synopsis = []
 
-        roms_to_scrape = sorted(
-            list(set(roms_without_box + roms_without_preview + roms_without_synopsis)),
-            key=lambda rom: rom.name,
-        )
+            roms_to_scrape = sorted(
+                list(set(roms_without_box + roms_without_preview + roms_without_synopsis)),
+                key=lambda rom: rom.name,
+            )
 
         if len(roms_to_scrape) < 1:
             current_window = "emulators"
@@ -449,6 +457,7 @@ class App:
 
         if input.key_pressed(input.B):
             roms_list = None
+            roms_to_scrape = None
             exit_menu = True
         elif input.key_pressed(input.A):
             self.gui.draw_log("Scraping...")
@@ -463,6 +472,7 @@ class App:
                 logger.log_error(f"Failed to get screenshot for {rom.name}")
             else:
                 self.gui.draw_log("Scraping completed!")
+            roms_to_scrape = None
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
             exit_menu = True
@@ -500,6 +510,7 @@ class App:
             self.gui.draw_log(
                 f"Scraping completed! Success: {success} Errors: {failure}"
             )
+            roms_to_scrape = None
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
             exit_menu = True
