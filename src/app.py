@@ -428,7 +428,7 @@ class App:
         synopsis_dir = Path(system["synopsis"])
         system_id = system["id"]
 
-        self.refresh_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
+        self.build_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
 
         if len(roms_to_scrape) < 1:
             current_window = "emulators"
@@ -467,7 +467,8 @@ class App:
                 exit_menu = True
             if roms_selected_position < 0:
                 roms_selected_position -= 1
-            self.refresh_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
+            roms_to_scrape = None
+            self.build_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
         elif input.key_pressed(input.START):
             progress: int = 0
             success: int = 0
@@ -595,7 +596,7 @@ class App:
 
         self.gui.draw_paint()
 
-    def refresh_rom_work(self, box_dir, preview_dir, roms_list, synopsis_dir):
+    def build_rom_work(self, box_dir, preview_dir, roms_list, synopsis_dir):
         global roms_without_box, roms_without_preview, roms_without_synopsis, roms_to_scrape
         if roms_to_scrape is None:
             if not box_dir.exists():
