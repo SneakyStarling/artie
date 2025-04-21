@@ -562,60 +562,48 @@ class App:
 
         rom_text = f"{selected_system} - Total Roms: {len(roms_list)}"
 
+        # --- Precompute sets for fast lookups ---
+        roms_without_box_set = set(roms_without_box) if self.box_enabled else set()
+        roms_without_preview_set = set(roms_without_preview) if self.preview_enabled else set()
+        roms_without_synopsis_set = set(roms_without_synopsis) if self.synopsis_enabled else set()
+
         missing_parts = []
         if self.box_enabled:
-            missing_parts.append(f"No box: {len(roms_without_box)}")
+            missing_parts.append(f"No box: {len(roms_without_box_set)}")
         if self.preview_enabled:
-            missing_parts.append(f"No preview: {len(roms_without_preview)}")
+            missing_parts.append(f"No preview: {len(roms_without_preview_set)}")
         if self.synopsis_enabled:
-            missing_parts.append(f"No text: {len(roms_without_synopsis)}")
-
+            missing_parts.append(f"No text: {len(roms_without_synopsis_set)}")
         missing_text = " / ".join(missing_parts)
 
         self.gui.draw_text((90, 10), rom_text, anchor="mm")
         self.gui.draw_text((500, 10), missing_text, anchor="mm")
 
-        start_idx = int(roms_selected_position / max_elem) * max_elem
+        start_idx = (roms_selected_position // max_elem) * max_elem
         end_idx = start_idx + max_elem
+        max_length = 48
+
         for i, rom in enumerate(roms_to_scrape[start_idx:end_idx]):
-            already_scraped = [
-                flag
-                for flag, condition in [
-                    ("Box", self.box_enabled and rom not in roms_without_box),
-                    (
-                        "Preview",
-                        self.preview_enabled and rom not in roms_without_preview,
-                    ),
-                    (
-                        "Text",
-                        self.synopsis_enabled and rom not in roms_without_synopsis,
-                    ),
-                ]
-                if condition
-            ]
-
+            # Use set membership for O(1) checks
+            already_scraped = []
+            if self.box_enabled and rom not in roms_without_box_set:
+                already_scraped.append("Box")
+            if self.preview_enabled and rom not in roms_without_preview_set:
+                already_scraped.append("Preview")
+            if self.synopsis_enabled and rom not in roms_without_synopsis_set:
+                already_scraped.append("Text")
             already_scraped_text = "/".join(already_scraped)
-            max_length = 48
+
             base_entry_text = (
-                rom.name[:max_length] + "..."
-                if len(rom.name) > max_length
-                else rom.name
+                rom.name[:max_length] + "..." if len(rom.name) > max_length else rom.name
             )
+            y_pos = 50 + (i * 35)
+            is_selected = i == (roms_selected_position % max_elem)
 
-            self.row_list(
-                base_entry_text,
-                (20, 50 + (i * 35)),
-                600,
-                i == (roms_selected_position % max_elem),
-            )
-
+            self.row_list(base_entry_text, (20, y_pos), 600, is_selected)
             if already_scraped_text:
-                self.row_list(
-                    already_scraped_text,
-                    (500, 50 + (i * 35)),
-                    50,
-                    i == (roms_selected_position % max_elem),
-                )
+                self.row_list(already_scraped_text, (500, y_pos), 50, is_selected)
+
         self.button_rectangle((30, 450), "Start", "All")
         self.button_circle((170, 450), "A", "Download")
         self.button_circle((300, 450), "B", "Back")
