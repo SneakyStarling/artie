@@ -44,6 +44,7 @@ class App:
     LOG_WAIT = 2
 
     def __init__(self):
+        self.input_thread = None
         self.colors = None
         self.dev_id = None
         self.dev_password = None
@@ -139,17 +140,17 @@ class App:
         main_gui = self.gui.create_image()
         self.gui.draw_active(main_gui)
         self.load_emulators()
+        self.input_thread = input.start_input_thread()
 
     def update(self) -> None:
         global skip_input_check, current_window
         if skip_input_check:
-            input.reset_input()
             skip_input_check = False
-        else:
-            input.check_input()
 
         if input.key_pressed("MENUF"):
             self.gui.draw_end()
+            input.should_exit = True
+            self.input_thread.join()
             sys.exit()
 
         if current_window == "emulators":

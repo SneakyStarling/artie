@@ -1,9 +1,11 @@
+import threading
 import struct
 import select
 import time
-
+import os
+import signal
+from fcntl import fcntl, F_GETFL, F_SETFL
 from collections import defaultdict
-from logger import LoggerSingleton as logger
 
 KEY_MAPPING = {
     304: "A",
@@ -23,51 +25,76 @@ KEY_MAPPING = {
     115: "V-",
 }
 
-# Tracks currently pressed buttons as {(key_code, value): timestamp}
+# Global state with thread-safe access
+input_lock = threading.Lock()
 active_buttons = defaultdict(float)
+should_exit = False
+
+# Input device configuration
+INPUT_DEVICE = "/dev/input/event1"
+EVENT_SIZE = 24
 
 
-def check_input(device_path="/dev/input/event1"):
-    with open(device_path, "rb") as input_file:
-        events_processed = 0
-        while True:
-            r, _, _ = select.select([input_file], [], [], 0)
+def input_worker():
+    global active_buttons, should_exit
+
+    fd = os.open(INPUT_DEVICE, os.O_RDWR)
+    fcntl(fd, F_SETFL, os.O_NONBLOCK)
+
+    try:
+        while not should_exit:
+            # Use select with timeout for clean exit
+            r, _, _ = select.select([fd], [], [], 0.1)
             if not r:
-                break
-
-            event = input_file.read(24)
-            if not event or len(event) != 24:
-                break
-
-            events_processed += 1
-            (_, _, ev_type, key_code, key_value) = struct.unpack("llHHi", event)
-
-            # Only process key events
-            if ev_type != 1 and ev_type != 3:
                 continue
 
-            # Update state tracking
-            key = (key_code, key_value)
-            if key_value == 0:
-                # Release all variants of this key_code
-                for k in list(active_buttons.keys()):
-                    if k[0] == key_code:
-                        del active_buttons[k]
-            else:
-                # Press event - update timestamp
-                active_buttons[key] = time.time()
+            # Read all available events
+            data = os.read(fd, EVENT_SIZE * 10)
+            for i in range(0, len(data), EVENT_SIZE):
+                event = data[i:i + EVENT_SIZE]
+                if len(event) < EVENT_SIZE:
+                    break
 
-        return events_processed > 0
+                _, _, ev_type, code, value = struct.unpack("llHHi", event)
+
+                if ev_type != 1 and ev_type != 3:
+                    continue
+
+                with input_lock:
+                    key = (code, value)
+                    if value == 0:
+                        # Remove all variants of this key code
+                        for k in list(active_buttons.keys()):
+                            if k[0] == code:
+                                del active_buttons[k]
+                    else:
+                        active_buttons[key] = time.time()
+
+    finally:
+        os.close(fd)
+
+
+def start_input_thread():
+    thread = threading.Thread(target=input_worker, daemon=True)
+    thread.start()
+    return thread
 
 
 def key_pressed(key_code_name, key_value=1):
     target_codes = [code for code, name in KEY_MAPPING.items() if name == key_code_name]
 
-    for code in target_codes:
-        if key_value in (-1, 1):
-            return (code, key_value) in active_buttons
-    return False
+    with input_lock:
+        for code in target_codes:
+            if key_value in (-1, 1):
+                return (code, key_value) in active_buttons
+        return False
 
 
-def reset_input():
-    active_buttons.clear()
+def cleanup(signum, frame):
+    global should_exit
+    should_exit = True
+
+
+# Set up signal handling for clean exit
+signal.signal(signal.SIGINT, cleanup)
+signal.signal(signal.SIGTERM, cleanup)
