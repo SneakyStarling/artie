@@ -3,6 +3,7 @@ import struct
 import select
 import os
 import signal
+import time
 from fcntl import fcntl, F_SETFL
 from collections import defaultdict
 
@@ -29,6 +30,7 @@ input_lock = threading.Lock()
 active_buttons = defaultdict(bool)
 should_exit = False
 last_button = 0
+button_time = 0.0
 
 # Input device configuration
 INPUT_DEVICE = "/dev/input/event1"
@@ -79,16 +81,23 @@ def start_input_thread():
 
 
 def key_pressed(code, key_value=1):
-    global last_button
+    global last_button, button_time
     with input_lock:
         if (code, key_value) in active_buttons:
             if active_buttons[(code, key_value)]:
                 del active_buttons[(code, key_value)]  # remove buttons that have just been toggled off
-                if last_button == code:  # return False if input was already registered in previous loop
+                if last_button == code and time.time() - button_time < 0.3:  # return False when registered recently
                     return False
             last_button = code
+            button_time = time.time()
             return True
         return False
+
+
+def key_cycle():
+    global last_button
+    with input_lock:
+        last_button = 0
 
 
 def reset_input():
