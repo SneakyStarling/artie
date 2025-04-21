@@ -150,7 +150,6 @@ class App:
 
         if input.key_pressed("MENUF"):
             self.gui.draw_end()
-            input.cleanup_input()
             sys.exit()
 
         if current_window == "emulators":

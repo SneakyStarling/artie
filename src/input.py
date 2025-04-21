@@ -1,6 +1,5 @@
 import struct
 import select
-import os
 import time
 
 from collections import defaultdict
@@ -26,34 +25,13 @@ KEY_MAPPING = {
 
 # Tracks currently pressed buttons as {(key_code, value): timestamp}
 active_buttons = defaultdict(float)
-input_file = None
-
-
-def init_input(device_path="/dev/input/event1"):
-    global input_file
-    try:
-        input_file = open(device_path, "rb")
-        # Set non-blocking mode
-        fd = input_file.fileno()
-        flags = os.fcntl.fcntl(fd, os.fcntl.F_GETFL)
-        os.fcntl.fcntl(fd, os.fcntl.F_SETFL, flags | os.O_NONBLOCK)
-        return True
-    except Exception as e:
-        print(f"Failed to initialize input: {e}")
-        return False
 
 
 def check_input(device_path="/dev/input/event1"):
-    global input_file
-
-    if input_file is None:
-        if not init_input(device_path):
-            return False
-
-    try:
+    with open(device_path, "rb") as input_file:
         events_processed = 0
         while True:
-            r, _, _ = select.select([input_file], [], [], 0.02)
+            r, _, _ = select.select([input_file], [], [], 0)
             if not r:
                 break
 
@@ -62,23 +40,15 @@ def check_input(device_path="/dev/input/event1"):
                 break
 
             events_processed += 1
-
-            (tv_sec, tv_usec, ev_type, key_code, key_value) = struct.unpack("llHHi", event)
+            (_, _, ev_type, key_code, key_value) = struct.unpack("llHHi", event)
 
             # Only process key events
             if ev_type != 1 and ev_type != 3:
                 continue
 
-            if key_value == 0:
-                normalized_value = 0
-            elif key_value == 1:
-                normalized_value = 1
-            else:
-                normalized_value = -1
-
             # Update state tracking
-            key = (key_code, normalized_value)
-            if normalized_value == 0:
+            key = (key_code, key_value)
+            if key_value == 0:
                 # Release all variants of this key_code
                 for k in list(active_buttons.keys()):
                     if k[0] == key_code:
@@ -88,13 +58,6 @@ def check_input(device_path="/dev/input/event1"):
                 active_buttons[key] = time.time()
 
         return events_processed > 0
-
-    except Exception as e:
-        print(f"Input error: {e}")
-        cleanup_input()
-        time.sleep(0.1)
-        init_input(device_path)
-        return False
 
 
 def key_pressed(key_code_name, key_value=1):
@@ -108,13 +71,3 @@ def key_pressed(key_code_name, key_value=1):
 
 def reset_input():
     active_buttons.clear()
-
-
-def cleanup_input():
-    global input_file
-    if input_file:
-        try:
-            input_file.close()
-        except:
-            pass
-        input_file = None
