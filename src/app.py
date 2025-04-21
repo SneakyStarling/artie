@@ -44,6 +44,7 @@ roms_without_synopsis = None
 
 preview_lock = threading.Lock()
 previews = set()
+current_preview = ""
 
 
 class Rom:
@@ -400,7 +401,7 @@ class App:
         return scraped_box, scraped_preview, scraped_synopsis, rom.name
 
     def load_roms(self) -> None:
-        global selected_position, current_window, roms_selected_position, skip_input_check, \
+        global selected_position, current_window, roms_selected_position, skip_input_check, current_preview, \
             selected_system, roms_list, roms_to_scrape, roms_without_box, roms_without_preview, roms_without_synopsis
 
         exit_menu = False
@@ -485,8 +486,10 @@ class App:
                 self.gui.draw_log("Scraping completed!")
                 with preview_lock:
                     if len(previews) > 0:
-                        self.gui.display_picture(previews.pop)
+                        current_preview = previews.pop
                     previews.clear()
+                if current_preview != "":
+                    self.gui.display_picture(current_preview)
             roms_to_scrape = None
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
@@ -523,7 +526,9 @@ class App:
                     self.gui.draw_log(f"Scraping {progress} of {len(roms_to_scrape)}")
                     with preview_lock:
                         if len(previews) > 0:
-                            self.gui.display_picture(previews.pop)
+                            current_preview = previews.pop
+                    if current_preview != "":
+                        self.gui.display_picture(current_preview)
                     self.gui.draw_paint()
             self.gui.draw_log(
                 f"Scraping completed! Success: {success} Errors: {failure}"
