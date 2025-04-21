@@ -44,7 +44,7 @@ def input_worker():
     try:
         while not should_exit:
             # Use select with timeout for clean exit
-            r, _, _ = select.select([fd], [], [], 0.1)
+            r, _, _ = select.select([fd], [], [], None)
             if not r:
                 continue
 
