@@ -127,13 +127,13 @@ class GUI:
         # Center the rectangle horizontally
         x = (self.screen_width - width) / 2
         # Place the rectangle in the bottom half of the screen
-        y = ((self.screen_height - 360) / 8)
-        yt = ((self.screen_height - 360) / 8) * 6
-        self.draw_rectangle_r([x, y, x + width, y + 80], 5, fill=fill, outline=outline)
+        y = (self.screen_height - 220)
+        yt = (self.screen_height + 220)
+        self.draw_rectangle_r([x, y, x + width, y + 440], 5, fill=fill, outline=outline)
 
         # Center the text within the rectangle
         text_x = x + width / 2
-        text_y = yt + 40  # Vertically center within the 80px height
+        text_y = yt - 20  # Vertically center within the 80px height
         self.draw_text((text_x, text_y), text, anchor="mm")  # Use middle-middle anchor
         self.display_picture(filename, (160, y+20))
 
