@@ -127,9 +127,9 @@ class GUI:
         # Center the rectangle horizontally
         x = (self.screen_width - width) / 2
         # Place the rectangle in the bottom half of the screen
-        y = (self.screen_height / 2) - 200
-        yt = (self.screen_height / 2) + 200
-        self.draw_rectangle_r([x, y, x + width, y + 400], 5, fill=fill, outline=outline)
+        y = (self.screen_height / 2) - 190
+        yt = (self.screen_height / 2) + 190
+        self.draw_rectangle_r([x, y, x + width, y + 380], 5, fill=fill, outline=outline)
 
         # Center the text within the rectangle
         text_x = x + width / 2

@@ -428,35 +428,7 @@ class App:
         synopsis_dir = Path(system["synopsis"])
         system_id = system["id"]
 
-        if roms_to_scrape is None:
-            if not box_dir.exists():
-                box_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_box = set(roms_list) if self.box_enabled else set()
-            else:
-                box_files = get_image_files_without_extension(box_dir)
-                roms_without_box = set([rom for rom in roms_list if rom.name not in box_files]) \
-                    if self.box_enabled else set()
-
-            if not preview_dir.exists():
-                preview_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_preview = set(roms_list) if self.preview_enabled else set()
-            else:
-                preview_files = get_image_files_without_extension(preview_dir)
-                roms_without_preview = set([rom for rom in roms_list if rom.name not in preview_files]) \
-                    if self.preview_enabled else set()
-
-            if not synopsis_dir.exists():
-                synopsis_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_synopsis = set(roms_list) if self.synopsis_enabled else set()
-            else:
-                synopsis_files = get_txt_files_without_extension(synopsis_dir)
-                roms_without_synopsis = set([rom for rom in roms_list if rom.name not in synopsis_files]) \
-                    if self.synopsis_enabled else set()
-
-            roms_to_scrape = sorted(
-                list(roms_without_box | roms_without_preview | roms_without_synopsis),
-                key=lambda rom: rom.name,
-            )
+        self.refresh_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
 
         if len(roms_to_scrape) < 1:
             current_window = "emulators"
@@ -495,8 +467,7 @@ class App:
                 exit_menu = True
             if roms_selected_position < 0:
                 roms_selected_position -= 1
-            roms_list = None
-            roms_to_scrape = None
+            self.refresh_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
         elif input.key_pressed(input.START):
             progress: int = 0
             success: int = 0
@@ -623,6 +594,38 @@ class App:
         self.button_circle((480, 450), "M", "Exit")
 
         self.gui.draw_paint()
+
+    def refresh_rom_work(self, box_dir, preview_dir, roms_list, synopsis_dir):
+        global roms_without_box, roms_without_preview, roms_without_synopsis, roms_to_scrape
+        if roms_to_scrape is None:
+            if not box_dir.exists():
+                box_dir.mkdir(parents=True, exist_ok=True)
+                roms_without_box = set(roms_list) if self.box_enabled else set()
+            else:
+                box_files = get_image_files_without_extension(box_dir)
+                roms_without_box = set([rom for rom in roms_list if rom.name not in box_files]) \
+                    if self.box_enabled else set()
+
+            if not preview_dir.exists():
+                preview_dir.mkdir(parents=True, exist_ok=True)
+                roms_without_preview = set(roms_list) if self.preview_enabled else set()
+            else:
+                preview_files = get_image_files_without_extension(preview_dir)
+                roms_without_preview = set([rom for rom in roms_list if rom.name not in preview_files]) \
+                    if self.preview_enabled else set()
+
+            if not synopsis_dir.exists():
+                synopsis_dir.mkdir(parents=True, exist_ok=True)
+                roms_without_synopsis = set(roms_list) if self.synopsis_enabled else set()
+            else:
+                synopsis_files = get_txt_files_without_extension(synopsis_dir)
+                roms_without_synopsis = set([rom for rom in roms_list if rom.name not in synopsis_files]) \
+                    if self.synopsis_enabled else set()
+
+            roms_to_scrape = sorted(
+                list(roms_without_box | roms_without_preview | roms_without_synopsis),
+                key=lambda rom: rom.name,
+            )
 
     def row_list(
         self,
