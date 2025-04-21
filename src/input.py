@@ -30,6 +30,7 @@ active_buttons = defaultdict(bool)
 should_exit = False
 last_button = 0
 button_time = 0.0
+hold_time = 0.0
 
 # Input device configuration
 INPUT_DEVICE = "/dev/input/event1"
@@ -80,15 +81,20 @@ def start_input_thread():
 
 
 def key_pressed(code, key_value=1):
-    global last_button, button_time
+    global last_button, button_time, hold_time
     with input_lock:
         if (code, key_value) in active_buttons:
             if active_buttons[(code, key_value)]:
                 del active_buttons[(code, key_value)]  # remove buttons that have just been toggled off
-                if last_button == code and time.time() - button_time < 0.5:  # return False when registered recently
+                if last_button == code and time.time() - button_time < 0.15:  # return False when registered recently
                     return False
-            last_button = code
             button_time = time.time()
+            if last_button != code:
+                hold_time = time.time()
+                last_button = code
+                return True
+            if time.time() - hold_time < 0.35:  # wait a brief moment before scrolling
+                return False
             return True
         return False
 

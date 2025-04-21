@@ -152,7 +152,7 @@ class App:
         self.input_thread = input.start_input_thread()
 
     def update(self) -> None:
-        global skip_input_check, current_window
+        global skip_input_check, current_window, ping
         if skip_input_check:
             input.reset_input()
             skip_input_check = False
@@ -170,6 +170,7 @@ class App:
         dt = time.time()-ping
         if dt < 0.15:
             time.sleep(0.15-dt)
+        ping = time.time()
 
     def get_available_systems(self) -> List[str]:
         out = [
