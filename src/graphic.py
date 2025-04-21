@@ -112,13 +112,6 @@ class GUI:
     def display_picture(self, filename, position=(160, 20), max_width=None, max_height=None):
         try:
             img = Image.open(filename)
-            # If the image has an embedded ICC profile, convert to sRGB
-            if "icc_profile" in img.info:
-                icc_profile = img.info.get("icc_profile")
-                srgb_profile = ImageCms.createProfile("sRGB")
-                img = ImageCms.profileToProfile(img, icc_profile, srgb_profile, outputMode="RGBA")
-            else:
-                img = img.convert("RGBA")
             if max_width or max_height:
                 img.thumbnail((max_width or img.width, max_height or img.height), Image.LANCZOS)
             if self.activeImage is None:
