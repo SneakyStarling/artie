@@ -275,8 +275,6 @@ class App:
                 roms_list = None
                 roms_to_scrape = None
                 current_window = "roms"
-                self.gui.draw_log("Checking existing media...")
-                self.gui.draw_paint()
                 skip_input_check = True
                 return
             elif input.key_pressed(input.X):
