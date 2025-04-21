@@ -32,6 +32,9 @@ current_window = "emulators"
 max_elem = 11
 skip_input_check = False
 
+roms_list = None
+available_systems = None
+
 
 class Rom:
     def __init__(self, name, filename, path):
@@ -160,13 +163,13 @@ class App:
             self.load_roms()
 
     def get_available_systems(self) -> List[str]:
-        available_systems = [
+        out = [
             d.lower()
             for d in os.listdir(self.roms_path)
             if Path(self.roms_path, d).is_dir()
         ]
         return sorted(
-            [system for system in available_systems if system in self.systems_mapping]
+            [system for system in out if system in self.systems_mapping]
         )
 
     def get_roms(self, system: str) -> list[Rom]:
@@ -226,19 +229,19 @@ class App:
         self.button_circle((170, 450), "X", "Delete")
 
     def load_emulators(self) -> None:
-        global selected_position, selected_system, current_window, skip_input_check
+        global selected_position, selected_system, current_window, skip_input_check, available_systems
 
         self.gui.draw_clear()
         self.gui.draw_rectangle_r([10, 40, 630, 440], 15)
         self.gui.draw_text((320, 20), f"Artie Scraper v{VERSION}", anchor="mm")
 
-        if not Path(self.roms_path).exists() or not any(Path(self.roms_path).iterdir()):
-            self.gui.draw_log("Wrong Roms path, check config.json")
-            self.gui.draw_paint()
-            time.sleep(self.LOG_WAIT)
-            sys.exit()
-
-        available_systems = self.get_available_systems()
+        if available_systems is None:
+            if not Path(self.roms_path).exists() or not any(Path(self.roms_path).iterdir()):
+                self.gui.draw_log("Wrong Roms path, check config.json")
+                self.gui.draw_paint()
+                time.sleep(self.LOG_WAIT)
+                sys.exit()
+            available_systems = self.get_available_systems()
 
         if available_systems:
             if input.key_pressed(input.DY,1):
@@ -374,16 +377,17 @@ class App:
         return scraped_box, scraped_preview, scraped_synopsis, rom.name
 
     def load_roms(self) -> None:
-        global selected_position, current_window, roms_selected_position, skip_input_check, selected_system
+        global selected_position, current_window, roms_selected_position, skip_input_check, selected_system, roms_list
 
         exit_menu = False
-        roms_list = self.get_roms(selected_system)
-        if not roms_list:
-            self.gui.draw_log(f"No roms found in {selected_system}...")
-            self.gui.draw_paint()
-            time.sleep(self.LOG_WAIT)
-            self.gui.draw_clear()
-            exit_menu = True
+        if roms_list is None:
+            roms_list = self.get_roms(selected_system)
+            if not roms_list:
+                self.gui.draw_log(f"No roms found in {selected_system}...")
+                self.gui.draw_paint()
+                time.sleep(self.LOG_WAIT)
+                self.gui.draw_clear()
+                exit_menu = True
 
         system = self.systems_mapping.get(selected_system)
         if not system:
@@ -444,6 +448,7 @@ class App:
             exit_menu = True
 
         if input.key_pressed(input.B):
+            roms_list = None
             exit_menu = True
         elif input.key_pressed(input.A):
             self.gui.draw_log("Scraping...")

@@ -7,7 +7,7 @@ import time
 from fcntl import fcntl, F_SETFL
 from collections import defaultdict
 
-
+# button codes
 A = 304
 B = 305
 Y = 306
@@ -23,7 +23,6 @@ START = 311
 MENU = 312
 VUP = 114
 VDOWN = 115
-
 
 # Global state with thread-safe access
 input_lock = threading.Lock()
@@ -92,12 +91,6 @@ def key_pressed(code, key_value=1):
             button_time = time.time()
             return True
         return False
-
-
-def key_cycle():
-    global last_button
-    with input_lock:
-        last_button = 0
 
 
 def reset_input():
