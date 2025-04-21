@@ -27,6 +27,8 @@ KEY_MAPPING = {
 # Tracks currently pressed buttons as {(key_code, value): timestamp}
 active_buttons = defaultdict(float)
 input_file = None
+EV_SYN = 0
+EV_KEY = 1
 
 
 def init_input(device_path="/dev/input/event1"):
@@ -44,7 +46,7 @@ def init_input(device_path="/dev/input/event1"):
 
 
 def check_input(device_path="/dev/input/event1"):
-    global current_code, current_code_name, current_value, input_file
+    global input_file
 
     if input_file is None:
         if not init_input(device_path):
@@ -61,29 +63,29 @@ def check_input(device_path="/dev/input/event1"):
             if not event or len(event) != 24:
                 break
 
+            (tv_sec, tv_usec, ev_type, code, value) = struct.unpack("llHHi", event)
+
+            # Only process key events
+            if ev_type != EV_KEY:
+                continue
+
             events_processed += 1
 
-            # FIX 1: Use correct format for signed value ('i' instead of 'I')
-            _, _, _, key_code, key_value = struct.unpack("llHHi", event)  # Changed to 'i'
-
-            # FIX 2: Proper value normalization
-            if key_value == 0:
+            if value == 0:
                 normalized_value = 0
-            elif key_value == 1:
+            elif value == 1:
                 normalized_value = 1
             else:
-                # Handle analog/directional inputs
-                normalized_value = -1 if key_value < 0 else 1
+                normalized_value = -1 if value < 0 else 1
 
             # Update state tracking
-            key = (key_code, normalized_value)
+            key = (code, normalized_value)
             if normalized_value == 0:
-                # Release all variants of this key_code
+                # Remove all entries for this key code
                 for k in list(active_buttons.keys()):
-                    if k[0] == key_code:
+                    if k[0] == code:
                         del active_buttons[k]
             else:
-                # Press event - update timestamp
                 active_buttons[key] = time.time()
 
         return events_processed > 0
@@ -99,15 +101,17 @@ def check_input(device_path="/dev/input/event1"):
 def key_pressed(key_code_name, key_value=1):
     target_codes = [code for code, name in KEY_MAPPING.items() if name == key_code_name]
 
+    current_time = time.time()
     for code in target_codes:
-        # FIX 3: Check for exact value matches
-        if key_value in (-1, 1):
-            if (code, key_value) in active_buttons:
-                return True
-        else:
-            # Check both directions if no specific value requested
-            if (code, -1) in active_buttons or (code, 1) in active_buttons:
-                return True
+        for value in (-1, 1):
+            key = (code, value)
+            if key in active_buttons:
+                # Auto-clear stale entries (e.g., >5 seconds old)
+                if current_time - active_buttons[key] > 5:
+                    del active_buttons[key]
+                    continue
+                if key_value in (value, 1):  # 1 is default
+                    return True
     return False
 
 
