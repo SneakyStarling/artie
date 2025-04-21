@@ -391,7 +391,7 @@ class App:
             destination: Path = box_dir / f"{rom.name}.png"
             self.save_file_to_disk(scraped_box, destination)
             with preview_lock:
-                previews.add(destination)
+                previews.add(str(destination))
         if scraped_preview:
             destination: Path = preview_dir / f"{rom.name}.png"
             self.save_file_to_disk(scraped_preview, destination)
