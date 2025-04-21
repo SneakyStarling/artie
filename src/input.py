@@ -84,10 +84,14 @@ def key_pressed(code, key_value=1):
     global last_button, button_time, hold_time
     with input_lock:
         if (code, key_value) in active_buttons:
-            if active_buttons[(code, key_value)]:
-                del active_buttons[(code, key_value)]  # remove buttons that have just been toggled off
+            if active_buttons[(code, key_value)]:  # a button that has just toggled of!
+                del active_buttons[(code, key_value)]  # remove buttons that button
                 if last_button == code and time.time() - button_time < 0.15:  # return False when registered recently
+                    last_button = 0
                     return False
+                else:
+                    last_button = 0
+                    return True
             button_time = time.time()
             if last_button != code:
                 hold_time = time.time()

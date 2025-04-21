@@ -168,8 +168,8 @@ class App:
         elif current_window == "roms":
             self.load_roms()
         dt = time.time()-ping
-        if dt < 0.15:
-            time.sleep(0.15-dt)
+        if dt < 0.05:
+            time.sleep(0.05-dt)
         ping = time.time()
 
     def get_available_systems(self) -> List[str]:
