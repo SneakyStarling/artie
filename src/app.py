@@ -417,36 +417,26 @@ class App:
         system_id = system["id"]
 
         if roms_to_scrape is None:
-            if self.box_enabled and not box_dir.exists():
+            if not box_dir.exists():
                 box_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_box = roms_list
-            elif self.box_enabled:
+                roms_without_box = set(roms_list) if self.box_enabled else set()
+            else:
                 box_files = get_image_files_without_extension(box_dir)
-                roms_without_box = [rom for rom in roms_list if rom.name not in box_files]
-            else:
-                roms_without_box = []
+                roms_without_box = set([rom for rom in roms_list if rom.name not in box_files]) if self.box_enabled else set()
 
-            if self.preview_enabled and not preview_dir.exists():
+            if not preview_dir.exists():
                 preview_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_preview = roms_list
-            elif self.preview_enabled:
+                roms_without_preview = set(roms_list) if self.preview_enabled else set()
+            else:
                 preview_files = get_image_files_without_extension(preview_dir)
-                roms_without_preview = [
-                    rom for rom in roms_list if rom.name not in preview_files
-                ]
-            else:
-                roms_without_preview = []
+                roms_without_preview = set([rom for rom in roms_list if rom.name not in preview_files]) if self.preview_enabled else set()
 
-            if self.synopsis_enabled and not synopsis_dir.exists():
+            if not synopsis_dir.exists():
                 synopsis_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_synopsis = roms_list
-            elif self.synopsis_enabled:
-                synopsis_files = get_txt_files_without_extension(synopsis_dir)
-                roms_without_synopsis = [
-                    rom for rom in roms_list if rom.name not in synopsis_files
-                ]
+                roms_without_synopsis = set(roms_list) if self.synopsis_enabled else set()
             else:
-                roms_without_synopsis = []
+                synopsis_files = get_txt_files_without_extension(synopsis_dir)
+                roms_without_synopsis = set([rom for rom in roms_list if rom.name not in synopsis_files]) if self.synopsis_enabled else set()
 
             roms_to_scrape = sorted(
                 list(set(roms_without_box + roms_without_preview + roms_without_synopsis)),
@@ -562,18 +552,13 @@ class App:
 
         rom_text = f"{selected_system} - Total Roms: {len(roms_list)}"
 
-        # --- Precompute sets for fast lookups ---
-        roms_without_box_set = set(roms_without_box) if self.box_enabled else set()
-        roms_without_preview_set = set(roms_without_preview) if self.preview_enabled else set()
-        roms_without_synopsis_set = set(roms_without_synopsis) if self.synopsis_enabled else set()
-
         missing_parts = []
         if self.box_enabled:
-            missing_parts.append(f"No box: {len(roms_without_box_set)}")
+            missing_parts.append(f"No box: {len(roms_without_box)}")
         if self.preview_enabled:
-            missing_parts.append(f"No preview: {len(roms_without_preview_set)}")
+            missing_parts.append(f"No preview: {len(roms_without_preview)}")
         if self.synopsis_enabled:
-            missing_parts.append(f"No text: {len(roms_without_synopsis_set)}")
+            missing_parts.append(f"No text: {len(roms_without_synopsis)}")
         missing_text = " / ".join(missing_parts)
 
         self.gui.draw_text((90, 10), rom_text, anchor="mm")
@@ -586,11 +571,11 @@ class App:
         for i, rom in enumerate(roms_to_scrape[start_idx:end_idx]):
             # Use set membership for O(1) checks
             already_scraped = []
-            if self.box_enabled and rom not in roms_without_box_set:
+            if self.box_enabled and rom not in roms_without_box:
                 already_scraped.append("Box")
-            if self.preview_enabled and rom not in roms_without_preview_set:
+            if self.preview_enabled and rom not in roms_without_preview:
                 already_scraped.append("Preview")
-            if self.synopsis_enabled and rom not in roms_without_synopsis_set:
+            if self.synopsis_enabled and rom not in roms_without_synopsis:
                 already_scraped.append("Text")
             already_scraped_text = "/".join(already_scraped)
 
