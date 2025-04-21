@@ -1,10 +1,10 @@
 import threading
 import struct
 import select
-import time
 import os
 import signal
-from fcntl import fcntl, F_GETFL, F_SETFL
+import time
+from fcntl import fcntl, F_SETFL
 from collections import defaultdict
 
 
@@ -43,7 +43,6 @@ def input_worker():
 
     try:
         while not should_exit:
-            # Use select with timeout for clean exit
             r, _, _ = select.select([fd], [], [], None)
             if not r:
                 continue
@@ -62,13 +61,14 @@ def input_worker():
 
                 with input_lock:
                     key = (code, value)
-                    if value == 0:
-                        # Remove all variants of this key code
+                    if value == 0:  # Toggle off the button
                         for k in list(active_buttons.keys()):
                             if k[0] == code:
                                 active_buttons[k] = True
                     else:
                         active_buttons[key] = False
+            time.sleep(0.2)  # avoid jumping over values on short press and reduce CPU hogging
+
 
     finally:
         os.close(fd)
@@ -84,7 +84,7 @@ def key_pressed(code, key_value=1):
     with input_lock:
         if (code, key_value) in active_buttons:
             if active_buttons[(code, key_value)]:
-                del active_buttons[(code, key_value)]
+                del active_buttons[(code, key_value)]  # remove buttons that have just been toggled off
             return True
         return False
 
