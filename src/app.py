@@ -29,7 +29,7 @@ selected_position = 0
 roms_selected_position = 0
 selected_system = ""
 current_window = "emulators"
-max_elem = 8
+max_elem = 11
 skip_input_check = False
 
 roms_list = None
@@ -656,7 +656,7 @@ class App:
             except Exception as e:
                 logger.log_error(f"Error loading image from {image_path}: {e}")
 
-        self.gui.draw_text((text_offset_x, pos[1] + 5), text, font=18)
+        self.gui.draw_text((text_offset_x, pos[1] + 5), text)
 
     def button_circle(self, pos: tuple[int, int], button: str, text: str) -> None:
         self.gui.draw_circle(pos, 25)
