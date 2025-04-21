@@ -7,6 +7,7 @@ import signal
 from fcntl import fcntl, F_GETFL, F_SETFL
 from collections import defaultdict
 
+# TODO: replace with static values to avoid string compare and improve performance
 KEY_MAPPING = {
     304: "A",
     305: "B",
@@ -27,7 +28,7 @@ KEY_MAPPING = {
 
 # Global state with thread-safe access
 input_lock = threading.Lock()
-active_buttons = defaultdict(float)
+active_buttons = defaultdict(bool)
 should_exit = False
 
 # Input device configuration
@@ -66,9 +67,9 @@ def input_worker():
                         # Remove all variants of this key code
                         for k in list(active_buttons.keys()):
                             if k[0] == code:
-                                del active_buttons[k]
+                                active_buttons[k] = True
                     else:
-                        active_buttons[key] = time.time()
+                        active_buttons[key] = False
 
     finally:
         os.close(fd)
@@ -85,8 +86,10 @@ def key_pressed(key_code_name, key_value=1):
 
     with input_lock:
         for code in target_codes:
-            if key_value in (-1, 1):
-                return (code, key_value) in active_buttons
+            if (code, key_value) in active_buttons:
+                if key_value == 0:
+                    del active_buttons[key_value]
+                return True
         return False
 
 
