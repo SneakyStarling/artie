@@ -28,6 +28,7 @@ VDOWN = 115
 input_lock = threading.Lock()
 active_buttons = defaultdict(bool)
 should_exit = False
+last_button = 0
 
 # Input device configuration
 INPUT_DEVICE = "/dev/input/event1"
@@ -35,7 +36,7 @@ EVENT_SIZE = 24
 
 
 def input_worker():
-    global active_buttons, should_exit
+    global active_buttons, should_exit, last_button
 
     fd = os.open(INPUT_DEVICE, os.O_RDWR)
     fcntl(fd, F_SETFL, os.O_NONBLOCK)
@@ -78,10 +79,14 @@ def start_input_thread():
 
 
 def key_pressed(code, key_value=1):
+    global last_button
     with input_lock:
         if (code, key_value) in active_buttons:
             if active_buttons[(code, key_value)]:
                 del active_buttons[(code, key_value)]  # remove buttons that have just been toggled off
+                if last_button == code:  # return False if input was already registered in previous loop
+                    return False
+            last_button = code
             return True
         return False
 
