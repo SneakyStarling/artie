@@ -489,10 +489,14 @@ class App:
                         current_preview = previews.pop()
                     previews.clear()
                 self.gui.draw_preview("Scraping completed!", current_preview)
-            roms_to_scrape = None
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
-            exit_menu = True
+            if roms_to_scrape == 1:
+                exit_menu = True
+            if roms_selected_position < 0:
+                roms_selected_position -= 1
+            roms_list = None
+            roms_to_scrape = None
         elif input.key_pressed(input.START):
             progress: int = 0
             success: int = 0

@@ -127,15 +127,15 @@ class GUI:
         # Center the rectangle horizontally
         x = (self.screen_width - width) / 2
         # Place the rectangle in the bottom half of the screen
-        y = (self.screen_height / 2) - 220
-        yt = (self.screen_height / 2) + 220
-        self.draw_rectangle_r([x, y, x + width, y + 440], 5, fill=fill, outline=outline)
+        y = (self.screen_height / 2) - 200
+        yt = (self.screen_height / 2) + 200
+        self.draw_rectangle_r([x, y, x + width, y + 400], 5, fill=fill, outline=outline)
 
         # Center the text within the rectangle
         text_x = x + width / 2
-        text_y = yt - 20
+        text_y = yt - 40
         self.draw_text((text_x, text_y), text, anchor="mm")  # Use middle-middle anchor
-        self.display_picture(filename, (160, 40))
+        self.display_picture(filename, (160, 80))  # should be y+n but that doesn't seem to work
 
     def draw_log(self, text, fill=COLOR_PRIMARY, outline=COLOR_PRIMARY_DARK, width=500):
         # Center the rectangle horizontally
