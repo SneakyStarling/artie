@@ -83,7 +83,7 @@ def start_input_thread():
 def key_pressed(code, key_value=1):
     with input_lock:
         if (code, key_value) in active_buttons:
-            if key_value == 0:
+            if active_buttons[(code, key_value)]:
                 del active_buttons[(code, key_value)]
             return True
         return False
