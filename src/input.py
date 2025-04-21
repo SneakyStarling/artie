@@ -53,7 +53,7 @@ def check_input(device_path="/dev/input/event1"):
     try:
         events_processed = 0
         while True:
-            r, _, _ = select.select([input_file], [], [], 0.1)
+            r, _, _ = select.select([input_file], [], [], 0.02)
             if not r:
                 break
 
