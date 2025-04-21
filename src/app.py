@@ -23,7 +23,7 @@ from scraper import (
     get_user_data,
 )
 
-VERSION = "1.0.5"
+VERSION = "1.0.7"
 
 selected_position = 0
 roms_selected_position = 0
@@ -31,6 +31,7 @@ selected_system = ""
 current_window = "emulators"
 max_elem = 11
 skip_input_check = False
+ping = time.time()
 
 roms_list = None
 available_systems = None
@@ -166,6 +167,9 @@ class App:
             self.load_emulators()
         elif current_window == "roms":
             self.load_roms()
+        dt = time.time()-ping
+        if dt < 0.15:
+            time.sleep(0.15-dt)
 
     def get_available_systems(self) -> List[str]:
         out = [

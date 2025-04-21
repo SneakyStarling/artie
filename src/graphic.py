@@ -23,9 +23,9 @@ class GUI:
         self.screen_size = self.screen_width * self.screen_height * self.bytes_per_pixel
 
         self.fontFile = {
-            15: ImageFont.truetype("assets/Roboto-Condensed.ttf", 15),
-            13: ImageFont.truetype("assets/Roboto-Condensed.ttf", 13),
-            11: ImageFont.truetype("assets/Roboto-Condensed.ttf", 11),
+            15: ImageFont.truetype("assets/DejaVuSansCondensed.ttf", 15),
+            13: ImageFont.truetype("assets/DejaVuSansCondensed.ttf", 13),
+            11: ImageFont.truetype("assets/DejaVuSansCondensed.ttf", 11),
         }
 
         self.activeImage = None
