@@ -66,7 +66,7 @@ def check_input(device_path="/dev/input/event1"):
             (tv_sec, tv_usec, ev_type, key_code, key_value) = struct.unpack("llHHi", event)
 
             # Only process key events
-            if ev_type != 1:
+            if ev_type != 1 and ev_type != 3:
                 continue
 
             if key_value == 0:
