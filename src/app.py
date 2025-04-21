@@ -148,7 +148,7 @@ class App:
             input.reset_input()
             skip_input_check = False
 
-        if input.key_pressed("MENUF"):
+        if input.key_pressed(input.MENU):
             self.gui.draw_end()
             input.should_exit = True
             self.input_thread.join()
@@ -241,20 +241,20 @@ class App:
         available_systems = self.get_available_systems()
 
         if available_systems:
-            if input.key_pressed("DY",1):
+            if input.key_pressed(input.DY,1):
                 if selected_position < len(available_systems) - 1:
                     selected_position += 1
-            elif input.key_pressed("DY", -1):
+            elif input.key_pressed(input.DY, -1):
                 if selected_position > 0:
                     selected_position -= 1
-            elif input.key_pressed("A"):
+            elif input.key_pressed(input.A):
                 selected_system = available_systems[selected_position]
                 current_window = "roms"
                 self.gui.draw_log("Checking existing media...")
                 self.gui.draw_paint()
                 skip_input_check = True
                 return
-            elif input.key_pressed("X"):
+            elif input.key_pressed(input.X):
                 selected_system = available_systems[selected_position]
                 self.delete_system_media()
                 self.gui.draw_log(f"Deleting all existing {selected_system} media...")
@@ -262,18 +262,18 @@ class App:
                 skip_input_check = True
                 time.sleep(self.LOG_WAIT)
                 return
-            elif input.key_pressed("L1"):
+            elif input.key_pressed(input.L1):
                 if selected_position > 0:
                     selected_position = max(0, selected_position - max_elem)
-            elif input.key_pressed("R1"):
+            elif input.key_pressed(input.R1):
                 if selected_position < len(available_systems) - 1:
                     selected_position = min(
                         len(available_systems) - 1, selected_position + max_elem
                     )
-            elif input.key_pressed("L2"):
+            elif input.key_pressed(input.L2):
                 if selected_position > 0:
                     selected_position = max(0, selected_position - 100)
-            elif input.key_pressed("R2"):
+            elif input.key_pressed(input.R2):
                 if selected_position < len(available_systems) - 1:
                     selected_position = min(
                         len(available_systems) - 1, selected_position + 100
@@ -443,9 +443,9 @@ class App:
             self.gui.draw_clear()
             exit_menu = True
 
-        if input.key_pressed("B"):
+        if input.key_pressed(input.B):
             exit_menu = True
-        elif input.key_pressed("A"):
+        elif input.key_pressed(input.A):
             self.gui.draw_log("Scraping...")
             self.gui.draw_paint()
             rom = roms_to_scrape[roms_selected_position]
@@ -461,7 +461,7 @@ class App:
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
             exit_menu = True
-        elif input.key_pressed("START"):
+        elif input.key_pressed(input.START):
             progress: int = 0
             success: int = 0
             failure: int = 0
@@ -498,24 +498,24 @@ class App:
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
             exit_menu = True
-        elif input.key_pressed("DY", 1):
+        elif input.key_pressed(input.DY, 1):
             if roms_selected_position < len(roms_to_scrape) - 1:
                 roms_selected_position += 1
-        elif input.key_pressed("DY", -1):
+        elif input.key_pressed(input.DY, -1):
             if roms_selected_position > 0:
                 roms_selected_position -= 1
-        elif input.key_pressed("L1"):
+        elif input.key_pressed(input.L1):
             if roms_selected_position > 0:
                 roms_selected_position = max(0, roms_selected_position - max_elem)
-        elif input.key_pressed("R1"):
+        elif input.key_pressed(input.R1):
             if roms_selected_position < len(roms_list) - 1:
                 roms_selected_position = min(
                     len(roms_list) - 1, roms_selected_position + max_elem
                 )
-        elif input.key_pressed("L2"):
+        elif input.key_pressed(input.L2):
             if roms_selected_position > 0:
                 roms_selected_position = max(0, roms_selected_position - 100)
-        elif input.key_pressed("R2"):
+        elif input.key_pressed(input.R2):
             if roms_selected_position < len(roms_list) - 1:
                 roms_selected_position = min(
                     len(roms_list) - 1, roms_selected_position + 100

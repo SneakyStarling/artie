@@ -7,24 +7,23 @@ import signal
 from fcntl import fcntl, F_GETFL, F_SETFL
 from collections import defaultdict
 
-# TODO: replace with static values to avoid string compare and improve performance
-KEY_MAPPING = {
-    304: "A",
-    305: "B",
-    306: "Y",
-    307: "X",
-    308: "L1",
-    309: "R1",
-    314: "L2",
-    315: "R2",
-    17: "DY",
-    16: "DX",
-    310: "SELECT",
-    311: "START",
-    312: "MENUF",
-    114: "V+",
-    115: "V-",
-}
+
+A = 304
+B = 305
+Y = 306
+X = 307
+L1 = 308
+R1 = 309
+L2 = 314
+R2 = 315
+DY = 17
+DX = 16
+SELECT = 310
+START = 311
+MENU = 312
+VUP = 114
+VDOWN = 115
+
 
 # Global state with thread-safe access
 input_lock = threading.Lock()
@@ -81,15 +80,12 @@ def start_input_thread():
     return thread
 
 
-def key_pressed(key_code_name, key_value=1):
-    target_codes = [code for code, name in KEY_MAPPING.items() if name == key_code_name]
-
+def key_pressed(code, key_value=1):
     with input_lock:
-        for code in target_codes:
-            if (code, key_value) in active_buttons:
-                if key_value == 0:
-                    del active_buttons[key_value]
-                return True
+        if (code, key_value) in active_buttons:
+            if key_value == 0:
+                del active_buttons[key_value]
+            return True
         return False
 
 
