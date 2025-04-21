@@ -85,7 +85,7 @@ def key_pressed(code, key_value=1):
         if (code, key_value) in active_buttons:
             if active_buttons[(code, key_value)]:
                 del active_buttons[(code, key_value)]  # remove buttons that have just been toggled off
-                if last_button == code and time.time() - button_time < 0.3:  # return False when registered recently
+                if last_button == code and time.time() - button_time < 0.5:  # return False when registered recently
                     return False
             last_button = code
             button_time = time.time()
