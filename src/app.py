@@ -259,7 +259,7 @@ class App:
                 if selected_position > 0:
                     selected_position -= 1
                 else:
-                    selected_position = len(available_systems) - 1
+                    selected_position = len(available_systems)
             elif input.key_pressed(input.A):
                 selected_system = available_systems[selected_position]
                 roms_list = None
@@ -530,7 +530,7 @@ class App:
             if roms_selected_position > 0:
                 roms_selected_position -= 1
             else:
-                roms_selected_position = len(roms_list) - 1
+                roms_selected_position = len(roms_to_scrape)
         elif input.key_pressed(input.L1):
             if roms_selected_position > 0:
                 roms_selected_position = max(0, roms_selected_position - max_elem)
