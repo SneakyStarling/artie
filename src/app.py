@@ -145,6 +145,7 @@ class App:
     def update(self) -> None:
         global skip_input_check, current_window
         if skip_input_check:
+            input.reset_input()
             skip_input_check = False
 
         if input.key_pressed("MENUF"):

@@ -90,6 +90,12 @@ def key_pressed(key_code_name, key_value=1):
         return False
 
 
+def reset_input():
+    global active_buttons
+    with input_lock:
+        active_buttons.clear()
+
+
 def cleanup(signum, frame):
     global should_exit
     should_exit = True
