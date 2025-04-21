@@ -122,6 +122,21 @@ class GUI:
         except Exception as e:
             print(f"Failed to load or display image: {e}")
 
+    def draw_preview(self, text, filename, fill=COLOR_PRIMARY, outline=COLOR_PRIMARY_DARK, width=500,
+                     position=(160, 20), max_width=None, max_height=None):
+        # Center the rectangle horizontally
+        x = (self.screen_width - width) / 2
+        # Place the rectangle in the bottom half of the screen
+        y = ((self.screen_height - 360) / 8)
+        yt = ((self.screen_height - 360) / 8) * 6
+        self.draw_rectangle_r([x, y, x + width, y + 80], 5, fill=fill, outline=outline)
+
+        # Center the text within the rectangle
+        text_x = x + width / 2
+        text_y = yt + 40  # Vertically center within the 80px height
+        self.draw_text((text_x, text_y), text, anchor="mm")  # Use middle-middle anchor
+        self.display_picture(filename, (160, y+20))
+
     def draw_log(self, text, fill=COLOR_PRIMARY, outline=COLOR_PRIMARY_DARK, width=500):
         # Center the rectangle horizontally
         x = (self.screen_width - width) / 2

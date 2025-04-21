@@ -488,8 +488,7 @@ class App:
                     if len(previews) > 0:
                         current_preview = previews.pop()
                     previews.clear()
-                if current_preview != "":
-                    self.gui.display_picture(current_preview)
+                self.gui.draw_preview("Scraping completed!", current_preview)
             roms_to_scrape = None
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
@@ -527,9 +526,7 @@ class App:
                     with preview_lock:
                         if len(previews) > 0:
                             current_preview = previews.pop()
-                    if current_preview != "":
-                        self.gui.display_picture(current_preview)
-                    self.gui.draw_log(f"Scraped {current_preview} ")
+                    self.gui.draw_preview(f"Scraping {progress} of {len(roms_to_scrape)}",current_preview)
                     self.gui.draw_paint()
             self.gui.draw_log(
                 f"Scraping completed! Success: {success} Errors: {failure}"
