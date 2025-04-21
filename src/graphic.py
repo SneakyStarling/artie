@@ -112,6 +112,13 @@ class GUI:
     def display_picture(self, filename, position=(160, 20), max_width=None, max_height=None):
         try:
             img = Image.open(filename)
+            if img.mode == "RGB":
+                r, g, b = img.split()
+                img = Image.merge("RGB", (b, g, r))
+            elif img.mode == "RGBA":
+                r, g, b, a = img.split()
+                img = Image.merge("RGBA", (b, g, r, a))
+            img = img.convert("RGBA")
             if max_width or max_height:
                 img.thumbnail((max_width or img.width, max_height or img.height), Image.LANCZOS)
             if self.activeImage is None:
