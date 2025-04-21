@@ -44,7 +44,7 @@ def init_input(device_path="/dev/input/event1"):
 
 
 def check_input(device_path="/dev/input/event1"):
-    global current_code, current_code_name, current_value, input_file
+    global input_file
 
     if input_file is None:
         if not init_input(device_path):
@@ -53,7 +53,7 @@ def check_input(device_path="/dev/input/event1"):
     try:
         events_processed = 0
         while True:
-            r, _, _ = select.select([input_file], [], [], 0)
+            r, _, _ = select.select([input_file], [], [], 0.1)
             if not r:
                 break
 
@@ -100,17 +100,9 @@ def check_input(device_path="/dev/input/event1"):
 def key_pressed(key_code_name, key_value=1):
     target_codes = [code for code, name in KEY_MAPPING.items() if name == key_code_name]
 
-    current_time = time.time()
     for code in target_codes:
-        # FIX 3: Check for exact value matches
         if key_value in (-1, 1):
-            key = (code, key_value)
-            if key in active_buttons:
-                if current_time - active_buttons[key] > 1: # remove stale entries
-                    del active_buttons[key]
-                    continue
-                else:
-                    return True
+            return (code, key_value) in active_buttons
     return False
 
 
