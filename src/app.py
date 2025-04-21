@@ -529,6 +529,7 @@ class App:
                             current_preview = previews.pop
                     if current_preview != "":
                         self.gui.display_picture(current_preview)
+                    self.gui.draw_log(f"Scraped {current_preview} ")
                     self.gui.draw_paint()
             self.gui.draw_log(
                 f"Scraping completed! Success: {success} Errors: {failure}"
