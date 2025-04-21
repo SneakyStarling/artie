@@ -569,8 +569,8 @@ class App:
             missing_parts.append(f"No text: {len(roms_without_synopsis)}")
         missing_text = " / ".join(missing_parts)
 
-        self.gui.draw_text((90, 10), rom_text, anchor="mm")
-        self.gui.draw_text((500, 10), missing_text, anchor="mm")
+        self.gui.draw_text((120, 10), rom_text, anchor="mm")
+        self.gui.draw_text((480, 10), missing_text, anchor="mm")
 
         start_idx = (roms_selected_position // max_elem) * max_elem
         end_idx = start_idx + max_elem

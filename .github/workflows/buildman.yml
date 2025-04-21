@@ -33,7 +33,7 @@ jobs:
       - name: Bundle App
         run: |
           mkdir -p build_files/mnt/mmc/MUOS/application/Artie/.artie ; \
-          cp -r ./dist/app ./assets ./config.json ./splash_resized.png build_files/mnt/mmc/MUOS/application/Artie/.artie ; \
+          cp -r ./dist/app ./assets ./config.json build_files/mnt/mmc/MUOS/application/Artie/.artie ; \
           echo "Contents of .artie/:" ; \
           ls -l build_files/mnt/mmc/MUOS/application/Artie/.artie ; \
           cp -r ./mux_launch.sh build_files/mnt/mmc/MUOS/application/Artie ; \
