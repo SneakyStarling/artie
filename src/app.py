@@ -412,7 +412,7 @@ class App:
         if roms_to_scrape is None:
             if self.box_enabled and not box_dir.exists():
                 box_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_box: List[Rom] = roms_list
+                roms_without_box = roms_list
             elif self.box_enabled:
                 box_files = get_image_files_without_extension(box_dir)
                 roms_without_box = [rom for rom in roms_list if rom.name not in box_files]
@@ -421,7 +421,7 @@ class App:
 
             if self.preview_enabled and not preview_dir.exists():
                 preview_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_preview: List[Rom] = roms_list
+                roms_without_preview = roms_list
             elif self.preview_enabled:
                 preview_files = get_image_files_without_extension(preview_dir)
                 roms_without_preview = [
@@ -432,7 +432,7 @@ class App:
 
             if self.synopsis_enabled and not synopsis_dir.exists():
                 synopsis_dir.mkdir(parents=True, exist_ok=True)
-                roms_without_synopsis: List[Rom] = roms_list
+                roms_without_synopsis = roms_list
             elif self.synopsis_enabled:
                 synopsis_files = get_txt_files_without_extension(synopsis_dir)
                 roms_without_synopsis = [
