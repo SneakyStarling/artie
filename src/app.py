@@ -31,6 +31,8 @@ selected_system = ""
 current_window = "emulators"
 max_elem = 11
 skip_input_check = False
+refresh = 0.3
+polling = time.time()
 
 
 class Rom:
@@ -143,7 +145,7 @@ class App:
         self.input_thread = input.start_input_thread()
 
     def update(self) -> None:
-        global skip_input_check, current_window
+        global skip_input_check, current_window, polling
         if skip_input_check:
             input.reset_input()
             skip_input_check = False
@@ -158,6 +160,10 @@ class App:
             self.load_emulators()
         elif current_window == "roms":
             self.load_roms()
+        dt = time.time()-polling
+        if dt < refresh:
+            time.sleep(refresh-dt)  # avoid jumping over values on short press and reduce CPU hogging
+        polling = time.time()
 
     def get_available_systems(self) -> List[str]:
         available_systems = [

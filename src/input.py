@@ -3,7 +3,6 @@ import struct
 import select
 import os
 import signal
-import time
 from fcntl import fcntl, F_SETFL
 from collections import defaultdict
 
@@ -67,8 +66,6 @@ def input_worker():
                                 active_buttons[k] = True
                     else:
                         active_buttons[key] = False
-            time.sleep(0.2)  # avoid jumping over values on short press and reduce CPU hogging
-
 
     finally:
         os.close(fd)
