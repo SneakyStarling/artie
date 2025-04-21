@@ -109,7 +109,7 @@ class GUI:
                 outline=outline,
             )
 
-    def display_picture(self, filename, position=(0, 0), max_width=None, max_height=None):
+    def display_picture(self, filename, position=(160, 20), max_width=None, max_height=None):
         try:
             img = Image.open(filename).convert("RGBA")
             if max_width or max_height:
@@ -125,8 +125,8 @@ class GUI:
     def draw_log(self, text, fill=COLOR_PRIMARY, outline=COLOR_PRIMARY_DARK, width=500):
         # Center the rectangle horizontally
         x = (self.screen_width - width) / 2
-        # Center the rectangle vertically
-        y = (self.screen_height - 80) / 2  # 80 is the height of the rectangle
+        # Place the rectangle in the bottom half of the screen
+        y = ((self.screen_height - 80) / 4) * 3  # 80 is the height of the rectangle
         self.draw_rectangle_r([x, y, x + width, y + 80], 5, fill=fill, outline=outline)
 
         # Center the text within the rectangle

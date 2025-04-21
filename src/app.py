@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import List
@@ -40,6 +41,9 @@ roms_to_scrape = None
 roms_without_box = None
 roms_without_preview = None
 roms_without_synopsis = None
+
+preview_lock = threading.Lock()
+previews = set()
 
 
 class Rom:
@@ -385,6 +389,8 @@ class App:
         if scraped_box:
             destination: Path = box_dir / f"{rom.name}.png"
             self.save_file_to_disk(scraped_box, destination)
+            with preview_lock:
+                previews.add(destination)
         if scraped_preview:
             destination: Path = preview_dir / f"{rom.name}.png"
             self.save_file_to_disk(scraped_preview, destination)
@@ -477,6 +483,10 @@ class App:
                 logger.log_error(f"Failed to get screenshot for {rom.name}")
             else:
                 self.gui.draw_log("Scraping completed!")
+                with preview_lock:
+                    if len(previews) > 0:
+                        self.gui.display_picture(previews.pop)
+                    previews.clear()
             roms_to_scrape = None
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
@@ -511,11 +521,15 @@ class App:
                         failure += 1
                     progress += 1
                     self.gui.draw_log(f"Scraping {progress} of {len(roms_to_scrape)}")
+                    with preview_lock:
+                        if len(previews) > 0:
+                            self.gui.display_picture(previews.pop)
                     self.gui.draw_paint()
             self.gui.draw_log(
                 f"Scraping completed! Success: {success} Errors: {failure}"
             )
             roms_to_scrape = None
+            previews.clear()
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
             exit_menu = True
