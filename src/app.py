@@ -463,6 +463,7 @@ class App:
                     previews.clear()
                 self.gui.draw_preview("Scraping completed!", current_preview)
             self.gui.draw_paint()
+            current_preview = ""
             time.sleep(self.LOG_WAIT)
             if roms_to_scrape == 1:
                 exit_menu = True
@@ -510,6 +511,7 @@ class App:
                 previews.clear()
             roms_to_scrape = None
             self.gui.draw_paint()
+            current_preview = ""
             time.sleep(self.LOG_WAIT)
             exit_menu = True
         elif input.key_pressed(input.DY, 1):
