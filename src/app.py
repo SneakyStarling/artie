@@ -439,7 +439,7 @@ class App:
                 roms_without_synopsis = set([rom for rom in roms_list if rom.name not in synopsis_files]) if self.synopsis_enabled else set()
 
             roms_to_scrape = sorted(
-                list(set(roms_without_box + roms_without_preview + roms_without_synopsis)),
+                list(roms_without_box | roms_without_preview | roms_without_synopsis),
                 key=lambda rom: rom.name,
             )
 
