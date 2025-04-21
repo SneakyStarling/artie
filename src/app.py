@@ -526,13 +526,12 @@ class App:
                     with preview_lock:
                         if len(previews) > 0:
                             current_preview = previews.pop()
-                    self.gui.draw_preview(f"Scraping {progress} of {len(roms_to_scrape)}",current_preview)
+                    self.gui.draw_preview(f"Scraping {progress} of {len(roms_to_scrape)}", current_preview)
                     self.gui.draw_paint()
-            self.gui.draw_log(
-                f"Scraping completed! Success: {success} Errors: {failure}"
-            )
+            with preview_lock:
+                self.gui.draw_preview(f"Scraping completed! Success: {success} Errors: {failure}", current_preview)
+                previews.clear()
             roms_to_scrape = None
-            previews.clear()
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
             exit_menu = True

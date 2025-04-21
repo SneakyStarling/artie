@@ -133,9 +133,9 @@ class GUI:
 
         # Center the text within the rectangle
         text_x = x + width / 2
-        text_y = yt - 20  # Vertically center within the 80px height
+        text_y = yt - 20
         self.draw_text((text_x, text_y), text, anchor="mm")  # Use middle-middle anchor
-        self.display_picture(filename, (160, y+20))
+        self.display_picture(filename, (160, 40))
 
     def draw_log(self, text, fill=COLOR_PRIMARY, outline=COLOR_PRIMARY_DARK, width=500):
         # Center the rectangle horizontally
