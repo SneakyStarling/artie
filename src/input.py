@@ -83,21 +83,21 @@ def start_input_thread():
 def key_pressed(code, key_value=1):
     global last_button, button_time, hold_time
     with input_lock:
-        if (code, key_value) in active_buttons:
+        if (code, key_value) in active_buttons:  # our button has an event
             if active_buttons[(code, key_value)]:  # a button that has just toggled of!
-                del active_buttons[(code, key_value)]  # remove buttons that button
-                if last_button == code and time.time() - button_time < 0.15:  # return False when registered recently
+                del active_buttons[(code, key_value)]  # remove that button
+                if last_button == code and time.time() - button_time < 0.3:  # return False if already triggered recent
                     last_button = 0
                     return False
-                else:
+                else:  # Return True if it wasn't recently triggered (quick button tap)
                     last_button = 0
                     return True
             button_time = time.time()
-            if last_button != code:
+            if last_button != code:  # This button was freshly activated
                 hold_time = time.time()
                 last_button = code
                 return True
-            if time.time() - hold_time < 0.35:  # wait a brief moment before scrolling
+            if time.time() - hold_time < 0.3:  # wait a brief moment before scrolling
                 return False
             return True
         return False
