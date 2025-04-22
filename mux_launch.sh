@@ -1,4 +1,5 @@
 #!/bin/sh
+
 echo app >/tmp/act_go
 
 ARTIE_DIR="/mnt/mmc/MUOS/application/Artie/.artie"

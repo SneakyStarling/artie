@@ -249,14 +249,18 @@ def fetch_preview(game, config):
     return preview
 
 
-def fetch_splash(game, config):
+def fetch_splash(game, config, splash_media=None):
     medias = game["response"]["jeu"]["medias"]
-    splash = _fetch_media(medias, config["splash"], None)
+    if splash_media is None:
+        splash_media = config["splash"]
+    splash = _fetch_media(medias, splash_media, None)
     if not splash:
-        logger.log_error(
-            f"Error downloading splash: {game['response']['jeu']['medias']}"
-        )
-        return None
+        splash = _fetch_media(medias, "wheel-hd", None)
+        if not splash:
+            logger.log_error(
+                f"Error downloading splash: {game['response']['jeu']['medias']}"
+            )
+            return None
     return splash
 
 
