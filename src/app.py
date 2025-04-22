@@ -470,8 +470,8 @@ class App:
             self.gui.draw_paint()
             current_preview = ""
             time.sleep(self.LOG_WAIT)
-            # if roms_to_scrape == 1:
-            exit_menu = True
+            if roms_to_scrape == 1:
+                exit_menu = True
             if roms_selected_position < 0:
                 roms_selected_position -= 1
             roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, synopsis_dir, splash_dir)
