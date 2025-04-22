@@ -218,6 +218,8 @@ class App:
                 media_types.append("box")
             if self.preview_enabled:
                 media_types.append("preview")
+            if self.splash_enabled:
+                media_types.append("splash")
             if self.synopsis_enabled:
                 media_types.append("synopsis")
             for media_type in media_types:
