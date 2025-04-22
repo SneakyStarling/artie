@@ -4,7 +4,7 @@ from typing import Optional
 
 class LoggerSingleton:
     _logger_instance: Optional[logging.Logger] = None
-    _log_level = logging.INFO
+    _log_level = logging.DEBUG
 
     @classmethod
     def setup_logger(cls, log_level=logging.INFO):
