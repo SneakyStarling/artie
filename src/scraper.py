@@ -232,16 +232,20 @@ def _fetch_media(medias, properties, regions):
 def fetch_art(game, config, art_type, region_search=True):
     medias = game["response"]["jeu"]["medias"]
     regions = config.get("regions", ["us", "ame", "wor"]) if region_search else None
-    art_config = config.get(art_type, {})
-    art_spec = art_config.get("type")
+
+    raw_art_config = config.get(art_type)
+    art_media = raw_art_config.get("type") if isinstance(raw_art_config, dict) else raw_art_config
     art = None
-    if isinstance(art_spec, list):
-        for art_type_name in art_spec:
-            art = _fetch_media(medias, art_type_name, regions)
+    if isinstance(art_media, list):
+        for media_key in art_media:
+            art = _fetch_media(medias, media_key, regions)
             if art:
                 break
-    else:  # Single string value
-        art = _fetch_media(medias, art_spec, regions)
+    elif isinstance(art_media, str):
+        art = _fetch_media(medias, art_media, regions)
+    else:
+        Logger.log_error(f"Invalid art config for {art_type}: {art_media}")
+        return None
     if not art:  # fallback to region free search of region search failed.
         if region_search:
             return fetch_art(game, config, art_type, False)
