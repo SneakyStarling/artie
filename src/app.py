@@ -430,7 +430,7 @@ class App:
         system_id = system["id"]
 
         if roms_to_scrape is None:
-            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir, splash_dir)
+            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, synopsis_dir, splash_dir)
 
         if len(roms_to_scrape) < 1:
             current_window = "emulators"
@@ -449,7 +449,7 @@ class App:
             self.gui.draw_log("Scraping...")
             self.gui.draw_paint()
             rom = roms_to_scrape[roms_selected_position]
-            scraped_box, scraped_preview, scraped_synopsis, scraped_splash = self.process_rom(
+            scraped_box, scraped_preview, scraped_synopsis, scraped_splash, rom_name = self.process_rom(
                 rom,
                 system_id,
                 box_dir,
@@ -474,7 +474,7 @@ class App:
             exit_menu = True
             if roms_selected_position < 0:
                 roms_selected_position -= 1
-            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir, splash_dir)
+            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, synopsis_dir, splash_dir)
             input.reset_input()
         elif input.key_pressed(input.START):
             progress: int = 0
@@ -610,8 +610,8 @@ class App:
 
         self.gui.draw_paint()
 
-    def list_roms_with_missing_media(self, box_dir, preview_dir, roms_list, synopsis_dir, splash_dir):
-        global roms_without_box, roms_without_preview, roms_without_synopsis, roms_without_splash
+    def list_roms_with_missing_media(self, box_dir, preview_dir, synopsis_dir, splash_dir):
+        global roms_without_box, roms_without_preview, roms_without_synopsis, roms_without_splash, roms_list
         if not box_dir.exists():
             box_dir.mkdir(parents=True, exist_ok=True)
             roms_without_box = set(roms_list) if self.box_enabled else set()
@@ -647,7 +647,6 @@ class App:
             list(roms_without_box | roms_without_preview | roms_without_synopsis | roms_without_splash),
             key=lambda rom: rom.name,
         )
-
 
     def row_list(
         self,
