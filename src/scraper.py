@@ -236,10 +236,8 @@ def fetch_art(game, config, art_type, region_search=True):
     art = None
     if isinstance(art_media, list):
         i = 0
-        while art is None:
+        while art is None and i < len(art_media):
             art = _fetch_media(medias, art_media[i], regions)
-            if len(art_media) >= i:
-                break
             i += 1
     else:
         art = _fetch_media(medias, art_media, regions)
