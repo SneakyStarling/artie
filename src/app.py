@@ -70,6 +70,7 @@ class App:
         self.box_enabled = True
         self.preview_enabled = True
         self.synopsis_enabled = True
+        self.splash_enabled = True
         self.meta_enabled = True
         self.threads = 1
         self.username = ""
@@ -126,6 +127,7 @@ class App:
         self.content = self.config.get("screenscraper").get("content")
         self.box_enabled = self.content["box"]["enabled"]
         self.preview_enabled = self.content["preview"]["enabled"]
+        self.splash_enabled = self.content["splash"]["enabled"]
         self.synopsis_enabled = self.content["synopsis"]["enabled"]
         self.meta_enabled = self.content["synopsis"]["meta"]
 
@@ -368,6 +370,7 @@ class App:
                     scraped_box = fetch_box(game, content)
                 if self.preview_enabled:
                     scraped_preview = fetch_preview(game, content)
+                if self.splash_enabled:
                     scraped_splash = fetch_splash(game, content)
                 if self.synopsis_enabled:
                     scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled)
