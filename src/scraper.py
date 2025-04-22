@@ -235,11 +235,13 @@ def fetch_art(game, config, art_type, region_search=True):
     art_media = config[art_type]
     art = None
     if isinstance(art_media, list):
-        for media_key in art_media:
-            art = _fetch_media(medias, media_key, regions)
-            if art:
+        i = 0
+        while art is None:
+            art = _fetch_media(medias, art_media[i], regions)
+            if len(art_media) >= i:
                 break
-    else:  # Single string value
+            i += 1
+    else:
         art = _fetch_media(medias, art_media, regions)
     if not art:  # fallback to region free search of region search failed.
         if region_search:
