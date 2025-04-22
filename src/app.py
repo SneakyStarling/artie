@@ -368,11 +368,11 @@ class App:
             if game:
                 content = self.content
                 if self.box_enabled:
-                    scraped_box = fetch_art(game, content, Art.BOX)
+                    scraped_box = fetch_art(game, content, Art.BOX.value)
                 if self.preview_enabled:
-                    scraped_preview = fetch_art(game, content, Art.PREVIEW)
+                    scraped_preview = fetch_art(game, content, Art.PREVIEW.value)
                 if self.splash_enabled:
-                    scraped_splash = fetch_art(game, content, Art.SPLASH)
+                    scraped_splash = fetch_art(game, content, Art.SPLASH.value)
                 if self.synopsis_enabled:
                     scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled)
         except Exception as e:

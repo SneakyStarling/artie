@@ -266,10 +266,8 @@ def fetch_synopsis(game, config, meta):
         rating = game["response"]["jeu"].get("note", {"text": "no rating"})
         developer = game["response"]["jeu"].get("developpeur", {"text": "unknown developer"})
         classification = game["response"]["jeu"].get("classifications", [])
-        pegi_text = next(
-            (item["text"] for item in classification if item["type"] == "PEGI"), None)
-        esrb_text = next(
-            (item["text"] for item in classification if item["type"] == "ESRB"), None)
+        pegi_text = next( (item["text"] for item in classification if item["type"] == "PEGI"), None)
+        esrb_text = next( (item["text"] for item in classification if item["type"] == "ESRB"), None)
         if pegi_text is not None:
             classification_text = f", PEGI {pegi_text}"
         elif esrb_text is not None:
