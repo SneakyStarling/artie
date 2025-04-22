@@ -5,10 +5,9 @@ import os
 import re
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
-from enum import Enum
 
 import requests
-from logger import LoggerSingleton as logger
+from logger import LoggerSingleton as Logger
 
 GAME_INFO_URL = "https://api.screenscraper.fr/api2/jeuInfos.php"
 USER_INFO_URL = "https://api.screenscraper.fr/api2/ssuserInfos.php"
@@ -16,11 +15,9 @@ MAX_FILE_SIZE_BYTES = 104857600  # 100MB
 IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 VALID_MEDIA_TYPES = {"box-2D", "box-3D", "mixrbv1", "mixrbv2", "ss", "wheel", "wheel-hd"}
 
-
-class Art(Enum):
-    BOX = "box"
-    PREVIEW = "preview"
-    SPLASH = "splash"
+BOX = "box"
+PREVIEW = "preview"
+SPLASH = "splash"
 
 
 def get_image_files_without_extension(folder):
@@ -36,7 +33,7 @@ def get_txt_files_without_extension(folder):
 def sha1sum(file_path):
     file_size = os.path.getsize(file_path)
     if file_size > MAX_FILE_SIZE_BYTES:
-        logger.log_warning(f"File {file_path} exceeds max file size limit.")
+        Logger.log_warning(f"File {file_path} exceeds max file size limit.")
         return ""
 
     hash_sha1 = hashlib.sha1()
@@ -45,7 +42,7 @@ def sha1sum(file_path):
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_sha1.update(chunk)
     except IOError as e:
-        logger.log_error(f"Error reading file {file_path}: {e}")
+        Logger.log_error(f"Error reading file {file_path}: {e}")
         return ""
     return hash_sha1.hexdigest()
 
@@ -64,7 +61,7 @@ def file_size(file_path):
     try:
         return os.path.getsize(file_path)
     except OSError as e:
-        logger.log_error(f"Error getting size of file {file_path}: {e}")
+        Logger.log_error(f"Error getting size of file {file_path}: {e}")
         return None
 
 
@@ -106,8 +103,8 @@ def parse_find_game_url_by_name(system_id, rom_path, dev_id, dev_password, usern
     try:
         return urlunparse(urlparse(GAME_INFO_URL)._replace(query=urlencode(params)))
     except UnicodeDecodeError as e:
-        logger.log_debug("Params: %s")
-        logger.log_error(f"Error encoding URL: {e}. ROM params: {params}")
+        Logger.log_debug("Params: %s")
+        Logger.log_error(f"Error encoding URL: {e}. ROM params: {params}")
         return None
 
 
@@ -123,7 +120,7 @@ def parse_user_info_url(dev_id, dev_password, username, password):
     try:
         return urlunparse(urlparse(USER_INFO_URL)._replace(query=urlencode(params)))
     except UnicodeDecodeError as e:
-        logger.log_error(f"Error encoding URL: {e}. User info params: {params}")
+        Logger.log_error(f"Error encoding URL: {e}. User info params: {params}")
         return None
 
 
@@ -133,7 +130,7 @@ def find_media_url_by_region(medias, media_type, regions):
             for media in medias:
                 if media["type"] == media_type and media["region"] == region:
                     return media["url"]
-        logger.log_error(f"Media not found for regions: {regions}")
+        Logger.log_error(f"Media not found for regions: {regions}")
     else:
         for media in medias:
             if media["type"] == media_type:
@@ -150,20 +147,20 @@ def add_wh_to_media_url(media_url, width, height):
 
 def is_media_type_valid(media_type):
     if media_type not in VALID_MEDIA_TYPES:
-        logger.log_error(f"Unknown media type: {media_type}")
+        Logger.log_error(f"Unknown media type: {media_type}")
         return False
     return True
 
 
 def check_destination(dest):
     if os.path.exists(dest):
-        logger.log_error(f"Destination file already exists: {dest}")
+        Logger.log_error(f"Destination file already exists: {dest}")
         return None
     dest_dir = os.path.dirname(dest)
     try:
         os.makedirs(dest_dir, exist_ok=True)
     except OSError as e:
-        logger.log_error(f"Error creating directory {dest_dir}: {e}")
+        Logger.log_error(f"Error creating directory {dest_dir}: {e}")
         return None
 
 
@@ -173,10 +170,10 @@ def get(url):
             response = session.get(url, timeout=10)
             response.raise_for_status()
         except requests.Timeout:
-            logger.log_error("Request timed out")
+            Logger.log_error("Request timed out")
             return None
         except requests.RequestException as e:
-            logger.log_error(f"Error making HTTP request: {e}")
+            Logger.log_error(f"Error making HTTP request: {e}")
             return None
         return response.content
 
@@ -185,22 +182,22 @@ def fetch_data(url):
     try:
         body = get(url)
         if not body:
-            logger.log_error("Empty response body")
+            Logger.log_error("Empty response body")
             return None
 
         body_str = body.decode("utf-8")
         if "API closed" in body_str:
-            logger.log_error("API is closed")
+            Logger.log_error("API is closed")
             return None
         if "Erreur" in body_str:
-            logger.log_error("Error found in response: %s", body_str)
+            Logger.log_error("Error found in response: %s", body_str)
             return None
 
         return json.loads(body_str)
     except json.JSONDecodeError as e:
-        logger.log_error(f"Error decoding JSON response: {e}")
+        Logger.log_error(f"Error decoding JSON response: {e}")
     except Exception as e:
-        logger.log_error(f"Error fetching data from URL: {e}")
+        Logger.log_error(f"Error fetching data from URL: {e}")
     return None
 
 
@@ -247,7 +244,7 @@ def fetch_art(game, config, art_type, region_search=True):
     if not art:  # fallback to region free search of region search failed.
         if region_search:
             return fetch_art(game, config, art_type, False)
-        logger.log_error(f"Error downloading art: {game['response']['jeu']['medias']}")
+        Logger.log_error(f"Error downloading art: {game['response']['jeu']['medias']}")
     return art
 
 
@@ -256,7 +253,6 @@ def fetch_synopsis(game, config, meta):
 
     if not synopsis:
         return None
-
     synopsis_lang = config["synopsis"]["lang"]
     synopsis_text = next(
         (item["text"] for item in synopsis if item["langue"] == synopsis_lang), None)
@@ -266,8 +262,8 @@ def fetch_synopsis(game, config, meta):
         rating = game["response"]["jeu"].get("note", {"text": "no rating"})
         developer = game["response"]["jeu"].get("developpeur", {"text": "unknown developer"})
         classification = game["response"]["jeu"].get("classifications", [])
-        pegi_text = next( (item["text"] for item in classification if item["type"] == "PEGI"), None)
-        esrb_text = next( (item["text"] for item in classification if item["type"] == "ESRB"), None)
+        pegi_text = next((item["text"] for item in classification if item["type"] == "PEGI"), None)
+        esrb_text = next((item["text"] for item in classification if item["type"] == "ESRB"), None)
         if pegi_text is not None:
             classification_text = f", PEGI {pegi_text}"
         elif esrb_text is not None:
@@ -277,16 +273,12 @@ def fetch_synopsis(game, config, meta):
         players_text = players.get("text", "unknown")
         rating_text = rating.get("text", "no rating")
         developer_text = developer.get("text", "unknown developer")
-
         try:
             float_rating = float(rating_text)
             rating_text = str(round(float_rating / 2, 1))
         except ValueError:
             pass  # Keep the original rating string if conversion fails
-
         full_content = f"{developer_text}, {rating_text}, {players_text}p{classification_text} - {synopsis_text}"
-
     else:
         full_content = synopsis_text
-
     return full_content

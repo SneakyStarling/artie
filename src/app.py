@@ -5,24 +5,13 @@ import os
 import sys
 import threading
 import time
+import input
+import scraper
 from pathlib import Path
 from typing import List
-
-
-import input
 from graphic import GUI
-from logger import LoggerSingleton as logger
+from logger import LoggerSingleton as Logger
 from PIL import Image
-from scraper import (
-    check_destination,
-    fetch_synopsis,
-    get_game_data,
-    get_image_files_without_extension,
-    get_txt_files_without_extension,
-    get_user_data,
-    fetch_art,
-    Art
-)
 
 VERSION = "1.0.7"
 
@@ -95,7 +84,7 @@ class App:
 
                     if any(identifier.lower() in dir_lower for identifier in system["identifiers"]) and \
                             all(exclude.lower() not in dir_lower for exclude in system["excludes"]):
-                        logger.log_info(system)
+                        Logger.log_info(system)
                         self.systems_mapping[dir_lower] = system
                         break
                     else:
@@ -109,7 +98,7 @@ class App:
         try:
             self.config = json.loads(file_contents)
         except json.JSONDecodeError as e:
-            logger.log_error(f"Error loading config file: {e}")
+            Logger.log_error(f"Error loading config file: {e}")
             self.gui.draw_log("Your config.json file is not a valid json file...")
             self.gui.draw_paint()
             time.sleep(self.LOG_WAIT)
@@ -146,11 +135,11 @@ class App:
     def setup_logging(self):
         log_level_str = self.config.get("log_level", "INFO").upper()
         log_level = getattr(logging, log_level_str, logging.INFO)
-        logger.setup_logger(log_level)
+        Logger.setup_logger(log_level)
 
     def start(self, config_file: str) -> None:
         self.setup_logging()
-        logger.log_debug(f"Artie Scraper v{VERSION}")
+        Logger.log_debug(f"Artie Scraper v{VERSION}")
         self.load_config(config_file)
         self.gui.draw_start()
         self.gui.screen_reset()
@@ -205,7 +194,7 @@ class App:
                 if file.startswith("."):
                     continue
                 if file_path.is_file() and self.is_valid_rom(file):
-                    logger.log_info(file_path)
+                    Logger.log_info(file_path)
                     name = file_path.stem
                     rom = Rom(filename=file, name=name, path=file_path)
                     roms.append(rom)
@@ -335,13 +324,13 @@ class App:
 
     @staticmethod
     def save_file_to_disk(data, destination):
-        check_destination(destination)
+        scraper.check_destination(destination)
         destination.write_bytes(data)
-        logger.log_debug(f"Saved file to {destination}")
+        Logger.log_debug(f"Saved file to {destination}")
         return True
 
     def get_user_threads(self):
-        user_info = get_user_data(
+        user_info = scraper.get_user_data(
             self.dev_id,
             self.dev_password,
             self.username,
@@ -351,12 +340,12 @@ class App:
             self.threads = 1
         else:
             self.threads = min(self.threads, int(user_info["response"]["ssuser"]["maxthreads"]))
-        logger.log_info(f"number of threads: {self.threads}")
+        Logger.log_info(f"number of threads: {self.threads}")
 
     def scrape(self, rom, system_id):
         scraped_box = scraped_preview = scraped_synopsis = scraped_splash = None
         try:
-            game = get_game_data(
+            game = scraper.get_game_data(
                 system_id,
                 rom.path,
                 self.dev_id,
@@ -368,15 +357,15 @@ class App:
             if game:
                 content = self.content
                 if self.box_enabled:
-                    scraped_box = fetch_art(game, content, Art.BOX.value)
+                    scraped_box = scraper.fetch_art(game, content, scraper.BOX)
                 if self.preview_enabled:
-                    scraped_preview = fetch_art(game, content, Art.PREVIEW.value)
+                    scraped_preview = scraper.fetch_art(game, content, scraper.PREVIEW)
                 if self.splash_enabled:
-                    scraped_splash = fetch_art(game, content, Art.SPLASH.value)
+                    scraped_splash = scraper.fetch_art(game, content, scraper.SPLASH)
                 if self.synopsis_enabled:
-                    scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled)
+                    scraped_synopsis = scraper.fetch_synopsis(game, content, self.meta_enabled)
         except Exception as e:
-            logger.log_error(f"Error scraping {rom.name}: {e}")
+            Logger.log_error(f"Error scraping {rom.name}: {e}")
 
         return scraped_box, scraped_preview, scraped_synopsis, scraped_splash
 
@@ -401,7 +390,7 @@ class App:
             self.save_file_to_disk(scraped_preview, destination)
         if scraped_splash:
             destination: Path = splash_dir / f"{rom.name}.png"
-            logger.log_debug(f"Saving splash for {rom.name} to {destination}")
+            Logger.log_debug(f"Saving splash for {rom.name} to {destination}")
             self.save_file_to_disk(scraped_splash, destination)
         if scraped_synopsis:
             destination: Path = synopsis_dir / f"{rom.name}.txt"
@@ -463,7 +452,7 @@ class App:
 
             if not scraped_box and not scraped_preview and not scraped_synopsis:
                 self.gui.draw_log("Scraping failed!")
-                logger.log_error(f"Failed to get screenshot for {rom.name}")
+                Logger.log_error(f"Failed to get screenshot for {rom.name}")
             else:
                 self.gui.draw_log("Scraping completed!")
                 with preview_lock:
@@ -487,7 +476,7 @@ class App:
             self.gui.draw_log(f"Scraping {progress} of {len(roms_to_scrape)}")
             self.gui.draw_paint()
             with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                logger.log_debug(f"Available threads: {self.threads}")
+                Logger.log_debug(f"Available threads: {self.threads}")
                 futures = {
                     executor.submit(
                         self.process_rom,
@@ -507,7 +496,7 @@ class App:
                     if scraped_box or scraped_preview or scraped_synopsis:
                         success += 1
                     else:
-                        logger.log_error(f"Failed to get screenshot for {rom_name}")
+                        Logger.log_error(f"Failed to get screenshot for {rom_name}")
                         failure += 1
                     progress += 1
                     self.gui.draw_log(f"Scraping {progress} of {len(roms_to_scrape)}")
@@ -620,7 +609,7 @@ class App:
             box_dir.mkdir(parents=True, exist_ok=True)
             roms_without_box = set(roms_list) if self.box_enabled else set()
         else:
-            box_files = get_image_files_without_extension(box_dir)
+            box_files = scraper.get_image_files_without_extension(box_dir)
             roms_without_box = set([rom for rom in roms_list if rom.name not in box_files]) \
                 if self.box_enabled else set()
 
@@ -628,7 +617,7 @@ class App:
             preview_dir.mkdir(parents=True, exist_ok=True)
             roms_without_preview = set(roms_list) if self.preview_enabled else set()
         else:
-            preview_files = get_image_files_without_extension(preview_dir)
+            preview_files = scraper.get_image_files_without_extension(preview_dir)
             roms_without_preview = set([rom for rom in roms_list if rom.name not in preview_files]) \
                 if self.preview_enabled else set()
 
@@ -636,14 +625,14 @@ class App:
             synopsis_dir.mkdir(parents=True, exist_ok=True)
             roms_without_synopsis = set(roms_list) if self.synopsis_enabled else set()
         else:
-            synopsis_files = get_txt_files_without_extension(synopsis_dir)
+            synopsis_files = scraper.get_txt_files_without_extension(synopsis_dir)
             roms_without_synopsis = set([rom for rom in roms_list if rom.name not in synopsis_files]) \
                 if self.synopsis_enabled else set()
         if not splash_dir.exists():
             splash_dir.mkdir(parents=True, exist_ok=True)
             roms_without_splash = set(roms_list) if self.splash_enabled else set()
         else:
-            splash_files = get_image_files_without_extension(splash_dir)
+            splash_files = scraper.get_image_files_without_extension(splash_dir)
             roms_without_splash = set([rom for rom in roms_list if rom.name not in splash_files]) \
                 if self.splash_enabled else set()
 
@@ -692,7 +681,7 @@ class App:
                 )
 
             except Exception as e:
-                logger.log_error(f"Error loading image from {image_path}: {e}")
+                Logger.log_error(f"Error loading image from {image_path}: {e}")
 
         self.gui.draw_text((text_offset_x, pos[1] + 5), text)
 
