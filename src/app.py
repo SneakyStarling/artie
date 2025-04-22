@@ -566,15 +566,16 @@ class App:
         rom_text = f"{selected_system} - Total Roms: {len(roms_list)}"
 
         missing_parts = []
+        missing_parts.append(f"No ")
         if self.box_enabled:
-            missing_parts.append(f"No box: {len(roms_without_box)}")
+            missing_parts.append(f"Box: {len(roms_without_box)} /")
         if self.preview_enabled:
-            missing_parts.append(f"No preview: {len(roms_without_preview)}")
+            missing_parts.append(f"Preview: {len(roms_without_preview)} /")
         if self.splash_enabled:  # New line
-            missing_parts.append(f"No splash: {len(roms_without_splash)}")
+            missing_parts.append(f"Splash: {len(roms_without_splash)} /")
         if self.synopsis_enabled:
-            missing_parts.append(f"No text: {len(roms_without_synopsis)}")
-        missing_text = " / ".join(missing_parts)
+            missing_parts.append(f"Text: {len(roms_without_synopsis)}")
+        missing_text = " ".join(missing_parts)
 
         self.gui.draw_text((120, 10), rom_text, anchor="mm")
         self.gui.draw_text((480, 10), missing_text, anchor="mm")
@@ -587,13 +588,13 @@ class App:
             # Use set membership for O(1) checks
             already_scraped = []
             if self.box_enabled and rom not in roms_without_box:
-                already_scraped.append("Box")
+                already_scraped.append("B")
             if self.preview_enabled and rom not in roms_without_preview:
-                already_scraped.append("Preview")
+                already_scraped.append("P")
             if self.splash_enabled and rom not in roms_without_splash:
-                already_scraped.append("splash")
+                already_scraped.append("S")
             if self.synopsis_enabled and rom not in roms_without_synopsis:
-                already_scraped.append("Text")
+                already_scraped.append("T")
             already_scraped_text = "/".join(already_scraped)
 
             base_entry_text = (
