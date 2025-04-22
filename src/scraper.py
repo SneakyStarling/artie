@@ -233,6 +233,7 @@ def fetch_art(game, config, art_type, region_search=True):
     medias = game["response"]["jeu"]["medias"]
     regions = config.get("regions", ["us", "ame", "wor"]) if region_search else None
     art_media = config[art_type]
+    Logger.log_error(f"art_config: {art_media} ({type(art_media)})")
     art = None
     if isinstance(art_media, list):
         i = 0
