@@ -450,11 +450,16 @@ class App:
             self.gui.draw_paint()
             rom = roms_to_scrape[roms_selected_position]
             scraped_box, scraped_preview, scraped_synopsis, scraped_splash = self.process_rom(
-                rom, system_id, box_dir, preview_dir, synopsis_dir, splash_dir)
+                rom,
+                system_id,
+                box_dir,
+                preview_dir,
+                synopsis_dir,
+                splash_dir)
 
-            if not scraped_box and not scraped_preview and not scraped_synopsis:
+            if not scraped_box and not scraped_preview and not scraped_splash and not scraped_synopsis:
                 self.gui.draw_log("Scraping failed!")
-                Logger.log_error(f"Failed to get screenshot for {rom.name}")
+                Logger.log_error(f"Failed to get media for {rom.name}")
             else:
                 self.gui.draw_log("Scraping completed!")
                 with preview_lock:
@@ -465,8 +470,8 @@ class App:
             self.gui.draw_paint()
             current_preview = ""
             time.sleep(self.LOG_WAIT)
-            if roms_to_scrape == 1:
-                exit_menu = True
+            # if roms_to_scrape == 1:
+            exit_menu = True
             if roms_selected_position < 0:
                 roms_selected_position -= 1
             roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir, splash_dir)
