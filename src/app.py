@@ -40,6 +40,7 @@ roms_to_scrape = None
 
 roms_without_box = None
 roms_without_preview = None
+roms_without_splash = None
 roms_without_synopsis = None
 
 preview_lock = threading.Lock()
@@ -385,6 +386,7 @@ class App:
         # overwhelmed, let's give it a short break and try again.
         if (self.box_enabled and scraped_box is None) or \
                 (self.preview_enabled and scraped_preview is None) or \
+                (self.splash_enabled and scraped_splash is None) or \
                 (self.synopsis_enabled and scraped_synopsis is None):
             time.sleep(0.5)
             scraped_box, scraped_preview, scraped_synopsis, scraped_splash = self.scrape(rom, system_id)
@@ -407,7 +409,8 @@ class App:
 
     def load_roms(self) -> None:
         global selected_position, current_window, roms_selected_position, skip_input_check, current_preview, \
-            selected_system, roms_list, roms_to_scrape, roms_without_box, roms_without_preview, roms_without_synopsis
+            selected_system, roms_list, roms_to_scrape, roms_without_box, roms_without_preview, roms_without_synopsis, \
+            roms_without_splash
 
         exit_menu = False
 
@@ -566,6 +569,8 @@ class App:
             missing_parts.append(f"No box: {len(roms_without_box)}")
         if self.preview_enabled:
             missing_parts.append(f"No preview: {len(roms_without_preview)}")
+        if self.splash_enabled:  # New line
+            missing_parts.append(f"No splash: {len(roms_without_splash)}")
         if self.synopsis_enabled:
             missing_parts.append(f"No text: {len(roms_without_synopsis)}")
         missing_text = " / ".join(missing_parts)
@@ -584,6 +589,8 @@ class App:
                 already_scraped.append("Box")
             if self.preview_enabled and rom not in roms_without_preview:
                 already_scraped.append("Preview")
+            if self.splash_enabled and rom not in roms_without_splash:
+                already_scraped.append("splash")
             if self.synopsis_enabled and rom not in roms_without_synopsis:
                 already_scraped.append("Text")
             already_scraped_text = "/".join(already_scraped)
@@ -606,7 +613,7 @@ class App:
         self.gui.draw_paint()
 
     def list_roms_with_missing_media(self, box_dir, preview_dir, roms_list, synopsis_dir, splash_dir):
-        global roms_without_box, roms_without_preview, roms_without_synopsis
+        global roms_without_box, roms_without_preview, roms_without_synopsis, roms_without_splash
         if not box_dir.exists():
             box_dir.mkdir(parents=True, exist_ok=True)
             roms_without_box = set(roms_list) if self.box_enabled else set()

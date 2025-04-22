@@ -255,6 +255,7 @@ def fetch_splash(game, config):
         return None
     return splash
 
+
 def fetch_synopsis(game, config, meta):
     synopsis = game["response"]["jeu"].get("synopsis", [])
 
