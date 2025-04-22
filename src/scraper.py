@@ -5,6 +5,7 @@ import os
 import re
 from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+from enum import Enum
 
 import requests
 from logger import LoggerSingleton as logger
@@ -16,6 +17,12 @@ IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 VALID_MEDIA_TYPES = {"box-2D", "box-3D", "mixrbv1", "mixrbv2", "ss", "wheel", "wheel-hd"}
 
 DEBUG = True
+
+
+class Art(Enum):
+    BOX = "box"
+    PREVIEW = "preview"
+    SPLASH = "splash"
 
 
 def get_image_files_without_extension(folder):
@@ -227,49 +234,31 @@ def _fetch_media(medias, properties, regions):
     return None
 
 
-def fetch_box(game, config):
+def fetch_art(game, config, art_type, region_search=True):
+    if region_search:
+        regions = config.get("regions", ["us", "ame", "wor"])
+    else:
+        regions = None
     medias = game["response"]["jeu"]["medias"]
-    regions = config.get("regions", ["us", "ame", "wor"])
-    box = _fetch_media(medias, config["box"], regions)
-    if not box:
-        logger.log_error(f"Error downloading box: {game['response']['jeu']['medias']}")
-        return None
-    return box
-
-
-def fetch_preview(game, config):
-    medias = game["response"]["jeu"]["medias"]
-    regions = config.get("regions", ["us", "ame", "wor"])
-    preview = _fetch_media(medias, config["preview"], regions)
-    if not preview:
-        logger.log_error(
-            f"Error downloading preview: {game['response']['jeu']['medias']}"
-        )
-        return None
-    return preview
-
-
-def fetch_splash(game, config, splash_media=None):
-    medias = game["response"]["jeu"]["medias"]
-    splash = None
-    if splash_media is None:
-        splash_media = config['splash']
-    if isinstance(splash_media, list):
+    art = None
+    art_media = config[art_type]
+    if isinstance(art_media, list):
         i = 0
-        while splash is None:
-            splash = _fetch_media(medias, splash_media[i], None)
-            if len(splash_media) >= i:
+        while art is None:
+            art = _fetch_media(medias, art_media[i], regions)
+            if len(art_media) >= i:
                 break
             i += 1
     else:
-        splash = _fetch_media(medias, splash_media, None)
-    if not splash:
-        if not splash:
-            logger.log_error(
-                f"Error downloading splash: {game['response']['jeu']['medias']}"
-            )
-            return None
-    return splash
+        art = _fetch_media(medias, art_media, regions)
+    if not art:
+        if region_search:  # fallback to region free search of region search failed.
+            return fetch_art(game, config, art_type, False)
+        logger.log_error(
+            f"Error downloading art: {game['response']['jeu']['medias']}"
+        )
+        return None
+    return art
 
 
 def fetch_synopsis(game, config, meta):
