@@ -399,7 +399,7 @@ class App:
             self.save_file_to_disk(scraped_preview, destination)
         if scraped_splash:
             destination: Path = splash_dir / f"{rom.name}.png"
-            self.save_file_to_disk(scraped_preview, destination)
+            self.save_file_to_disk(scraped_splash, destination)
         if scraped_synopsis:
             destination: Path = synopsis_dir / f"{rom.name}.txt"
             self.save_file_to_disk(scraped_synopsis.encode("utf-8"), destination)
@@ -435,7 +435,7 @@ class App:
         system_id = system["id"]
 
         if roms_to_scrape is None:
-            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir)
+            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir, splash_dir)
 
         if len(roms_to_scrape) < 1:
             current_window = "emulators"
@@ -455,8 +455,7 @@ class App:
             self.gui.draw_paint()
             rom = roms_to_scrape[roms_selected_position]
             scraped_box, scraped_preview, scraped_synopsis, scraped_splash = self.process_rom(
-                rom, system_id, box_dir, preview_dir, synopsis_dir, splash_dir
-            )
+                rom, system_id, box_dir, preview_dir, synopsis_dir, splash_dir)
 
             if not scraped_box and not scraped_preview and not scraped_synopsis:
                 self.gui.draw_log("Scraping failed!")
@@ -475,7 +474,7 @@ class App:
                 exit_menu = True
             if roms_selected_position < 0:
                 roms_selected_position -= 1
-            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir)
+            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir, splash_dir)
             input.reset_input()
         elif input.key_pressed(input.START):
             progress: int = 0
@@ -606,7 +605,7 @@ class App:
 
         self.gui.draw_paint()
 
-    def list_roms_with_missing_media(self, box_dir, preview_dir, roms_list, synopsis_dir):
+    def list_roms_with_missing_media(self, box_dir, preview_dir, roms_list, synopsis_dir, splash_dir):
         global roms_without_box, roms_without_preview, roms_without_synopsis
         if not box_dir.exists():
             box_dir.mkdir(parents=True, exist_ok=True)
@@ -631,10 +630,19 @@ class App:
             synopsis_files = get_txt_files_without_extension(synopsis_dir)
             roms_without_synopsis = set([rom for rom in roms_list if rom.name not in synopsis_files]) \
                 if self.synopsis_enabled else set()
+        if not splash_dir.exists():
+            splash_dir.mkdir(parents=True, exist_ok=True)
+            roms_without_splash = set(roms_list) if self.splash_enabled else set()
+        else:
+            splash_files = get_image_files_without_extension(splash_dir)
+            roms_without_splash = set([rom for rom in roms_list if rom.name not in splash_files]) \
+                if self.splash_enabled else set()
+
         return sorted(
-            list(roms_without_box | roms_without_preview | roms_without_synopsis),
+            list(roms_without_box | roms_without_preview | roms_without_synopsis | roms_without_splash),
             key=lambda rom: rom.name,
         )
+
 
     def row_list(
         self,
