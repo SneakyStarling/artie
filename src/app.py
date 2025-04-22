@@ -21,7 +21,7 @@ from scraper import (
     get_game_data,
     get_image_files_without_extension,
     get_txt_files_without_extension,
-    get_user_data,
+    get_user_data, fetch_splash,
 )
 
 VERSION = "1.0.7"
@@ -351,7 +351,7 @@ class App:
         logger.log_info(f"number of threads: {self.threads}")
 
     def scrape(self, rom, system_id):
-        scraped_box = scraped_preview = scraped_synopsis = None
+        scraped_box = scraped_preview = scraped_synopsis = scraped_splash = None
         try:
             game = get_game_data(
                 system_id,
@@ -368,22 +368,23 @@ class App:
                     scraped_box = fetch_box(game, content)
                 if self.preview_enabled:
                     scraped_preview = fetch_preview(game, content)
+                    scraped_splash = fetch_splash(game, content)
                 if self.synopsis_enabled:
                     scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled)
         except Exception as e:
             logger.log_error(f"Error scraping {rom.name}: {e}")
 
-        return scraped_box, scraped_preview, scraped_synopsis
+        return scraped_box, scraped_preview, scraped_synopsis, scraped_splash
 
-    def process_rom(self, rom, system_id, box_dir, preview_dir, synopsis_dir):
-        scraped_box, scraped_preview, scraped_synopsis = self.scrape(rom, system_id)
+    def process_rom(self, rom, system_id, box_dir, preview_dir, synopsis_dir, splash_dir):
+        scraped_box, scraped_preview, scraped_synopsis, scraped_splash = self.scrape(rom, system_id)
         # I've noticed in some cases a scrape fails but succeeds on the second try, the scrapper.fr might be
         # overwhelmed, let's give it a short break and try again.
         if (self.box_enabled and scraped_box is None) or \
                 (self.preview_enabled and scraped_preview is None) or \
                 (self.synopsis_enabled and scraped_synopsis is None):
             time.sleep(0.5)
-            scraped_box, scraped_preview, scraped_synopsis = self.scrape(rom, system_id)
+            scraped_box, scraped_preview, scraped_synopsis, scraped_splash = self.scrape(rom, system_id)
 
         if scraped_box:
             destination: Path = box_dir / f"{rom.name}.png"
@@ -392,6 +393,9 @@ class App:
                 previews.add(str(destination))
         if scraped_preview:
             destination: Path = preview_dir / f"{rom.name}.png"
+            self.save_file_to_disk(scraped_preview, destination)
+        if scraped_splash:
+            destination: Path = splash_dir / f"{rom.name}.png"
             self.save_file_to_disk(scraped_preview, destination)
         if scraped_synopsis:
             destination: Path = synopsis_dir / f"{rom.name}.txt"
@@ -423,6 +427,7 @@ class App:
 
         box_dir = Path(system["box"])
         preview_dir = Path(system["preview"])
+        splash_dir = Path(system["splash"])
         synopsis_dir = Path(system["synopsis"])
         system_id = system["id"]
 
@@ -447,7 +452,7 @@ class App:
             self.gui.draw_paint()
             rom = roms_to_scrape[roms_selected_position]
             scraped_box, scraped_preview, scraped_synopsis, _ = self.process_rom(
-                rom, system_id, box_dir, preview_dir, synopsis_dir
+                rom, system_id, box_dir, preview_dir, synopsis_dir, splash_dir
             )
 
             if not scraped_box and not scraped_preview and not scraped_synopsis:
@@ -485,6 +490,7 @@ class App:
                         box_dir,
                         preview_dir,
                         synopsis_dir,
+                        splash_dir,
                     ): rom
                     for rom in roms_to_scrape
                 }

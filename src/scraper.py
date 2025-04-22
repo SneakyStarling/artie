@@ -244,6 +244,17 @@ def fetch_preview(game, config):
     return preview
 
 
+def fetch_splash(game, config):
+    medias = game["response"]["jeu"]["medias"]
+    regions = config.get("regions", ["us", "ame", "wor"])
+    splash = _fetch_media(medias, config["splash"], regions)
+    if not splash:
+        logger.log_error(
+            f"Error downloading preview: {game['response']['jeu']['medias']}"
+        )
+        return None
+    return splash
+
 def fetch_synopsis(game, config, meta):
     synopsis = game["response"]["jeu"].get("synopsis", [])
 

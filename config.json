@@ -35,6 +35,12 @@
         "height": 275,
         "width": 515
       },
+      "splash": {
+        "enabled": true,
+        "type": "wheel",
+        "height": 300,
+        "width": 600
+      },
       "regions": [
         "us",
         "eu",
