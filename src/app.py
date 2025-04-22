@@ -427,7 +427,7 @@ class App:
         system_id = system["id"]
 
         if roms_to_scrape is None:
-            roms_to_scrape = self.build_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
+            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir)
 
         if len(roms_to_scrape) < 1:
             current_window = "emulators"
@@ -467,7 +467,7 @@ class App:
                 exit_menu = True
             if roms_selected_position < 0:
                 roms_selected_position -= 1
-            roms_to_scrape = self.build_rom_work(box_dir, preview_dir, roms_list, synopsis_dir)
+            roms_to_scrape = self.list_roms_with_missing_media(box_dir, preview_dir, roms_list, synopsis_dir)
             input.reset_input()
         elif input.key_pressed(input.START):
             progress: int = 0
@@ -597,7 +597,7 @@ class App:
 
         self.gui.draw_paint()
 
-    def build_rom_work(self, box_dir, preview_dir, roms_list, synopsis_dir):
+    def list_roms_with_missing_media(self, box_dir, preview_dir, roms_list, synopsis_dir):
         global roms_without_box, roms_without_preview, roms_without_synopsis
         if not box_dir.exists():
             box_dir.mkdir(parents=True, exist_ok=True)

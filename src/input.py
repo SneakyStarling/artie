@@ -24,6 +24,10 @@ MENU = 312
 VUP = 114
 VDOWN = 115
 
+# Input device configuration
+INPUT_DEVICE = "/dev/input/event1"
+EVENT_SIZE = 24
+
 # Global state with thread-safe access
 input_lock = threading.Lock()
 active_buttons = defaultdict(bool)
@@ -31,10 +35,6 @@ should_exit = False
 last_button = 0
 button_time = 0.0
 hold_time = 0.0
-
-# Input device configuration
-INPUT_DEVICE = "/dev/input/event1"
-EVENT_SIZE = 24
 
 
 def input_worker():

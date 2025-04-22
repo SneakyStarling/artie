@@ -2,7 +2,7 @@ import mmap
 import os
 from fcntl import ioctl
 
-from PIL import Image, ImageDraw, ImageFont, ImageCms
+from PIL import Image, ImageDraw, ImageFont
 
 
 class GUI:
