@@ -403,7 +403,7 @@ class App:
         if scraped_synopsis:
             destination: Path = synopsis_dir / f"{rom.name}.txt"
             self.save_file_to_disk(scraped_synopsis.encode("utf-8"), destination)
-        return scraped_box, scraped_preview, scraped_synopsis, rom.name
+        return scraped_box, scraped_preview, scraped_synopsis, scraped_splash, rom.name
 
     def load_roms(self) -> None:
         global selected_position, current_window, roms_selected_position, skip_input_check, current_preview, \
@@ -454,7 +454,7 @@ class App:
             self.gui.draw_log("Scraping...")
             self.gui.draw_paint()
             rom = roms_to_scrape[roms_selected_position]
-            scraped_box, scraped_preview, scraped_synopsis, _ = self.process_rom(
+            scraped_box, scraped_preview, scraped_synopsis, scraped_splash = self.process_rom(
                 rom, system_id, box_dir, preview_dir, synopsis_dir, splash_dir
             )
 
@@ -498,7 +498,7 @@ class App:
                     for rom in roms_to_scrape
                 }
                 for future in concurrent.futures.as_completed(futures):
-                    scraped_box, scraped_preview, scraped_synopsis, rom_name = (
+                    scraped_box, scraped_preview, scraped_synopsis, scraped_splash, rom_name = (
                         future.result()
                     )
                     if scraped_box or scraped_preview or scraped_synopsis:
