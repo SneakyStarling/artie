@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build-arm:
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v4
@@ -12,6 +12,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r ./requirements.txt
+          pip install pyinstaller
           pyinstaller --onefile src/app.py
 
       - name: Bundle App
