@@ -401,6 +401,7 @@ class App:
             self.save_file_to_disk(scraped_preview, destination)
         if scraped_splash:
             destination: Path = splash_dir / f"{rom.name}.png"
+            logger.log_debug(f"Saving splash for {rom.name} to {destination}")
             self.save_file_to_disk(scraped_splash, destination)
         if scraped_synopsis:
             destination: Path = synopsis_dir / f"{rom.name}.txt"

@@ -13,7 +13,7 @@ GAME_INFO_URL = "https://api.screenscraper.fr/api2/jeuInfos.php"
 USER_INFO_URL = "https://api.screenscraper.fr/api2/ssuserInfos.php"
 MAX_FILE_SIZE_BYTES = 104857600  # 100MB
 IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
-VALID_MEDIA_TYPES = {"box-2D", "box-3D", "mixrbv1", "mixrbv2", "ss", "wheel-hd"}
+VALID_MEDIA_TYPES = {"box-2D", "box-3D", "mixrbv1", "mixrbv2", "ss", "wheel", "wheel-hd"}
 
 DEBUG = True
 
@@ -123,11 +123,16 @@ def parse_user_info_url(dev_id, dev_password, username, password):
 
 
 def find_media_url_by_region(medias, media_type, regions):
-    for region in regions:
+    if regions is not None:
+        for region in regions:
+            for media in medias:
+                if media["type"] == media_type and media["region"] == region:
+                    return media["url"]
+        logger.log_error(f"Media not found for regions: {regions}")
+    else:
         for media in medias:
-            if media["type"] == media_type and media["region"] == region:
+            if media["type"] == media_type:
                 return media["url"]
-    logger.log_error(f"Media not found for regions: {regions}")
     return None
 
 
@@ -246,11 +251,10 @@ def fetch_preview(game, config):
 
 def fetch_splash(game, config):
     medias = game["response"]["jeu"]["medias"]
-    regions = config.get("regions", ["us", "ame", "wor"])
-    splash = _fetch_media(medias, config["splash"], regions)
+    splash = _fetch_media(medias, config["splash"], None)
     if not splash:
         logger.log_error(
-            f"Error downloading preview: {game['response']['jeu']['medias']}"
+            f"Error downloading splash: {game['response']['jeu']['medias']}"
         )
         return None
     return splash
