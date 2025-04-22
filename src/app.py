@@ -19,9 +19,10 @@ from scraper import (
     get_game_data,
     get_image_files_without_extension,
     get_txt_files_without_extension,
-    get_user_data, fetch_art,
+    get_user_data,
+    fetch_art,
+    Art
 )
-from src import scraper
 
 VERSION = "1.0.7"
 
@@ -367,11 +368,11 @@ class App:
             if game:
                 content = self.content
                 if self.box_enabled:
-                    scraped_box = fetch_art(game, content, scraper.Art.BOX)
+                    scraped_box = fetch_art(game, content, Art.BOX)
                 if self.preview_enabled:
-                    scraped_preview = fetch_art(game, content, scraper.Art.PREVIEW)
+                    scraped_preview = fetch_art(game, content, Art.PREVIEW)
                 if self.splash_enabled:
-                    scraped_splash = fetch_art(game, content, scraper.Art.SPLASH)
+                    scraped_splash = fetch_art(game, content, Art.SPLASH)
                 if self.synopsis_enabled:
                     scraped_synopsis = fetch_synopsis(game, content, self.meta_enabled)
         except Exception as e:

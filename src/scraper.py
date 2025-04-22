@@ -16,8 +16,6 @@ MAX_FILE_SIZE_BYTES = 104857600  # 100MB
 IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 VALID_MEDIA_TYPES = {"box-2D", "box-3D", "mixrbv1", "mixrbv2", "ss", "wheel", "wheel-hd"}
 
-DEBUG = True
-
 
 class Art(Enum):
     BOX = "box"
@@ -235,29 +233,21 @@ def _fetch_media(medias, properties, regions):
 
 
 def fetch_art(game, config, art_type, region_search=True):
-    if region_search:
-        regions = config.get("regions", ["us", "ame", "wor"])
-    else:
-        regions = None
     medias = game["response"]["jeu"]["medias"]
-    art = None
+    regions = config.get("regions", ["us", "ame", "wor"]) if region_search else None
     art_media = config[art_type]
+    art = None
     if isinstance(art_media, list):
-        i = 0
-        while art is None:
-            art = _fetch_media(medias, art_media[i], regions)
-            if len(art_media) >= i:
+        for media_key in art_media:
+            art = _fetch_media(medias, media_key, regions)
+            if art:
                 break
-            i += 1
-    else:
+    else:  # Single string value
         art = _fetch_media(medias, art_media, regions)
-    if not art:
-        if region_search:  # fallback to region free search of region search failed.
+    if not art:  # fallback to region free search of region search failed.
+        if region_search:
             return fetch_art(game, config, art_type, False)
-        logger.log_error(
-            f"Error downloading art: {game['response']['jeu']['medias']}"
-        )
-        return None
+        logger.log_error(f"Error downloading art: {game['response']['jeu']['medias']}")
     return art
 
 
