@@ -215,17 +215,18 @@ def get_user_data(dev_id, dev_password, username, password):
 
 
 def _fetch_media(medias, properties, regions):
-    media_type = properties["type"]
+    media_types = properties["type"]
     media_height = properties["height"]
     media_width = properties["width"]
 
-    if not is_media_type_valid(media_type):
-        return None
-
-    media_url = find_media_url_by_region(medias, media_type, regions)
-    if media_url:
-        media_url = add_wh_to_media_url(media_url, media_width, media_height)
-        return get(media_url)
+    types = media_types if isinstance(media_types, list) else [media_types]
+    for media_type in types:
+        if not is_media_type_valid(media_type):
+            continue
+        media_url = find_media_url_by_region(medias, media_type, regions)
+        if media_url:
+            media_url = add_wh_to_media_url(media_url, media_width, media_height)
+            return get(media_url)
     return None
 
 
@@ -233,15 +234,7 @@ def fetch_art(game, config, art_type, region_search=True):
     medias = game["response"]["jeu"]["medias"]
     regions = config.get("regions", ["us", "ame", "wor"]) if region_search else None
     art_media = config[art_type]
-    Logger.log_error(f"art_config: {art_media} ({type(art_media)})")
-    art = None
-    if isinstance(art_media, list):
-        i = 0
-        while art is None and i < len(art_media):
-            art = _fetch_media(medias, art_media[i], regions)
-            i += 1
-    else:
-        art = _fetch_media(medias, art_media, regions)
+    art = _fetch_media(medias, art_media, regions)
     if not art:  # fallback to region free search of region search failed.
         if region_search:
             return fetch_art(game, config, art_type, False)
